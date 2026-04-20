@@ -22,7 +22,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div>
+    <div style={{ marginTop: '150px' }}>
       <h1>Registre</h1>
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>

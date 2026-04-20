@@ -25,7 +25,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div>
+    <div style={{ marginTop: '150px' }}>
       <h1>Login</h1>
       {error && <p>{error}</p>}
       <form onSubmit={handleSubmit}>

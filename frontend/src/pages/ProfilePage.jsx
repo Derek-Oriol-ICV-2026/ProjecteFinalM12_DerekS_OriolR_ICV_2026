@@ -16,7 +16,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div>
+    <div style={{ marginTop: '150px' }}>
       <h1>Perfil</h1>
       <p>Usuari: {user.username}</p>
       <p>Rol: {user.role}</p>
