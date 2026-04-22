@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { MapContainer, ImageOverlay, CircleMarker, Popup, ZoomControl } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
@@ -16,6 +16,10 @@ const categoryColors = {
 
 export default function MapPage() {
   const [markers, setMarkers] = useState([])
+  const [isAlternativeVideo, setIsAlternativeVideo] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [showButton, setShowButton] = useState(true)
+  const videoRef = useRef(null)
 
   useEffect(() => {
     api.get('/markers')
@@ -23,10 +27,45 @@ export default function MapPage() {
       .catch(err => console.error(err))
   }, [])
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0
+      videoRef.current.play()
+    }
+  }, [isAlternativeVideo])
+
+  const handleVideoChange = () => {
+    setShowButton(false)
+    setIsTransitioning(true)
+    
+    setTimeout(() => {
+      setIsAlternativeVideo(true)
+      setTimeout(() => {
+        setIsTransitioning(false)
+      }, 500)
+    }, 500)
+  }
+
+  const handleVideoEnd = () => {
+    if (isAlternativeVideo) {
+      setIsTransitioning(true)
+      
+      setTimeout(() => {
+        setIsAlternativeVideo(false)
+        setTimeout(() => {
+          setIsTransitioning(false)
+          setShowButton(true)
+        }, 500)
+      }, 500)
+    }
+  }
+
   return (
     <>
-      {/* VIDEO DE FONDO FIJO */}
+      {/* VIDEO DE FONDO CON TRANSICIONES */}
       <video 
+        ref={videoRef}
+        onEnded={handleVideoEnd}
         style={{
           position: 'fixed',
           top: 80,
@@ -36,25 +75,64 @@ export default function MapPage() {
           objectFit: 'cover',
           zIndex: 1,
           pointerEvents: 'none',
-          filter: 'brightness(1)'
+          opacity: isTransitioning ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out'
         }}
         autoPlay 
         muted 
-        loop 
+        loop={!isAlternativeVideo}
         playsInline
+        key={isAlternativeVideo ? 'alt' : 'main'}
       >
-          <source src="/subnautica_liveWallpaper.mp4" type="video/mp4" />
+        <source 
+          src={isAlternativeVideo ? "/subnauticaFondoAnimalEdit.mp4" : "/subnautica_liveWallpaper.mp4"} 
+          type="video/mp4" 
+        />
       </video>
+
+      {/* BOTÓN FLOTANTE PARA CAMBIAR VIDEO - DESAPARECE AL HACER CLICK */}
+      {showButton && (
+        <button
+          onClick={handleVideoChange}
+          style={{
+            position: 'fixed',
+            bottom: '30px',
+            right: '30px',
+            zIndex: 100,
+            background: 'rgba(96, 165, 250, 0.2)',
+            border: '2px solid rgba(96, 165, 250, 0.5)',
+            color: '#60a5fa',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.95rem',
+            transition: 'all 0.3s ease',
+            backdropFilter: 'blur(8px)',
+            animation: 'fadeIn 0.3s ease-in-out'
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = 'rgba(96, 165, 250, 0.3)'
+            e.target.style.borderColor = '#60a5fa'
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = 'rgba(96, 165, 250, 0.2)'
+            e.target.style.borderColor = 'rgba(96, 165, 250, 0.5)'
+          }}
+        >
+          Atacar Criatura
+        </button>
+      )}
 
       {/* MAPA CON MÁRGENES PARA VER VIDEO EN BORDES */}
       <div style={{ 
         height: '100vh', 
         width: '100%',
+        marginTop: '80px',
         padding: '30px',
         position: 'relative',
         zIndex: 10,
-        boxSizing: 'border-box',
-        marginTop: '80px'
+        boxSizing: 'border-box'
       }}>
         <MapContainer
           zoomControl={false}
@@ -118,6 +196,19 @@ export default function MapPage() {
         <h2>Sección adicional</h2>
         <p>Aquí irá contenido futuro (Wiki, etc...)</p>
       </div>
+
+      <style>{`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </>
   )
 }
