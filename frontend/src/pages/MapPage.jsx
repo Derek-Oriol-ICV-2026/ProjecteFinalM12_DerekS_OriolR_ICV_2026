@@ -230,7 +230,7 @@ export default function MapPage() {
         {hoveredBiome && (
           <div style={{
             position:       'absolute',
-            bottom:         '50px',
+            bottom:         '100px',
             left:           '50%',
             transform:      'translateX(-50%)',
             background:     'rgba(10, 22, 40, 0.92)',
@@ -256,7 +256,7 @@ export default function MapPage() {
       <div style={{
         minHeight:  '100vh',
         background: 'rgba(10, 22, 40, 0.8)',
-        padding:    '4rem 2rem',
+        padding:    '10rem 2rem',
         color:      '#fff',
         position:   'relative',
         zIndex:     5,
@@ -272,9 +272,7 @@ export default function MapPage() {
           to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Activar pointer-events en el SVGOverlay de Leaflet.
-           Por defecto Leaflet pone pointer-events: none en overlayPane.
-           Con esto los onMouseEnter/Leave del SVG funcionan. */
+
         .leaflet-overlay-pane .biome-svg-overlay,
         .leaflet-overlay-pane .biome-svg-overlay svg,
         .leaflet-overlay-pane .biome-svg-overlay svg path {

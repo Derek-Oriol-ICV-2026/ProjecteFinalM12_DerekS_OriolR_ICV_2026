@@ -1,6 +1,6 @@
 
 
-const DEFAULT_FILL = '#2D127E'
+const DEFAULT_FILL = '#261f3a'
 
 function getBaseName(pathId) {
   const parts = pathId.split('_')
