@@ -46,7 +46,7 @@ const BIOME_NAMES = {
 const TYPE_LABELS = {
   fauna:     'Fauna',
   flora:     'Flora',
-  mineral:   'Mineral',
+  material:   'Material',
   poi:       'Punto de interés',
   leviathan: 'Leviatán',
 }
@@ -54,7 +54,7 @@ const TYPE_LABELS = {
 const TYPE_COLORS = {
   fauna:     '#ff6b6b',
   flora:     '#4ade80',
-  mineral:   '#fbbf24',
+  material:   '#fbbf24',
   poi:       '#a78bfa',
   leviathan: '#fb7185',
 }
@@ -77,30 +77,25 @@ function MapClickHandler({ onMapClick }) {
 function ResourcePanel({ marker, onClose }) {
   const resource = marker?.resource_id
   const visible = !!marker
-
   const typeColor = TYPE_COLORS[resource?.type] || '#60a5fa'
 
-  // Convertir stats (Map de Mongoose → objeto JS normal)
   const stats = resource?.stats
     ? (resource.stats instanceof Map
         ? Object.fromEntries(resource.stats)
-        : typeof resource.stats === 'object'
-          ? resource.stats
-          : {})
+        : typeof resource.stats === 'object' ? resource.stats : {})
     : {}
-
   const statsEntries = Object.entries(stats)
 
   return (
     <div style={{
-      position:   'absolute',
-      bottom:     '27px',
-      left:       '30px',
-      right:      '28px',
-      zIndex:     500,
-      opacity:    visible ? 1 : 0,
-      transform:  visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.98)',
-      transition: 'opacity 0.25s ease, transform 0.25s ease',
+      position:      'absolute',
+      bottom:        '27px',
+      left:          '30px',
+      right:         '28px',
+      zIndex:        500,
+      opacity:       visible ? 1 : 0,
+      transform:     visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.98)',
+      transition:    'opacity 0.25s ease, transform 0.25s ease',
       pointerEvents: visible ? 'auto' : 'none',
     }}>
       <div style={{
@@ -111,25 +106,21 @@ function ResourcePanel({ marker, onClose }) {
         boxShadow:      `0 -4px 32px rgba(0,0,0,0.5), 0 0 0 1px ${typeColor}22`,
         overflow:       'hidden',
         display:        'flex',
-        minHeight:      '160px',
+        height:         '160px',
       }}>
+
         {/* Banda de color tipo */}
-        <div style={{
-          width:      '4px',
-          background: typeColor,
-          flexShrink: 0,
-        }} />
+        <div style={{ width: '4px', background: typeColor, flexShrink: 0 }} />
 
         {/* Imagen */}
         <div style={{
-          width:           '140px',
-          flexShrink:      0,
-          background:      'rgba(0,0,0,0.3)',
-          display:         'flex',
-          alignItems:      'center',
-          justifyContent:  'center',
-          overflow:        'hidden',
-
+          width:          '140px',
+          flexShrink:     0,
+          background:     'rgba(0,0,0,0.3)',
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          overflow:       'hidden',
         }}>
           {resource?.image_url ? (
             <img
@@ -139,19 +130,13 @@ function ResourcePanel({ marker, onClose }) {
             />
           ) : (
             <div style={{
-              width:          '60px',
-              height:         '60px',
-              borderRadius:   '50%',
-              background:     `${typeColor}22`,
-              border:         `2px solid ${typeColor}55`,
-              display:        'flex',
-              alignItems:     'center',
-              justifyContent: 'center',
-              fontSize:       '1.5rem',
+              width: '60px', height: '60px', borderRadius: '50%',
+              background: `${typeColor}22`, border: `2px solid ${typeColor}55`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
             }}>
               {resource?.type === 'fauna'     ? '🐟' :
                resource?.type === 'flora'     ? '🌿' :
-               resource?.type === 'mineral'   ? '💎' :
+               resource?.type === 'material'   ? '💎' :
                resource?.type === 'leviathan' ? '🦑' : '📍'}
             </div>
           )}
@@ -159,74 +144,27 @@ function ResourcePanel({ marker, onClose }) {
 
         {/* Info principal */}
         <div style={{
-          flex:    1,
-          padding: '16px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap:     '8px',
-          overflow: 'hidden',
+          flex: 1, padding: '14px 20px', display: 'flex',
+          flexDirection: 'column', gap: '6px', overflow: 'hidden',
+          borderLeft: '1px solid rgba(255,255,255,0.06)',
         }}>
-          {/* Cabecera */}
+          {/* Badge tipo + nombre */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{
-              background:    `${typeColor}22`,
-              border:        `1px solid ${typeColor}66`,
-              color:         typeColor,
-              padding:       '2px 10px',
-              borderRadius:  '20px',
-              fontSize:      '0.7rem',
-              fontWeight:    '700',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              flexShrink:    0,
+              background: `${typeColor}22`, border: `1px solid ${typeColor}66`,
+              color: typeColor, padding: '2px 10px', borderRadius: '20px',
+              fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase',
+              letterSpacing: '0.08em', flexShrink: 0,
             }}>
               {TYPE_LABELS[resource?.type] || resource?.type}
             </span>
             <h3 style={{
-              margin:     0,
-              color:      '#e2e8f0',
-              fontSize:   '1.1rem',
-              fontWeight: '700',
-              whiteSpace: 'nowrap',
-              overflow:   'hidden',
-              textOverflow: 'ellipsis',
+              margin: 0, color: '#e2e8f0', fontSize: '1.1rem', fontWeight: '700',
+              whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
               {resource?.name}
             </h3>
           </div>
-
-          {/* Descripción */}
-          {resource?.description && (
-            <p style={{
-              margin:     0,
-              color:      '#94a3b8',
-              fontSize:   '0.85rem',
-              lineHeight: '1.5',
-              overflow:   'hidden',
-              display:    '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-            }}>
-              {resource.description}
-            </p>
-          )}
-
-          {/* Wiki content (preview) */}
-          {resource?.wiki_content && (
-            <p style={{
-              margin:     0,
-              color:      '#64748b',
-              fontSize:   '0.78rem',
-              lineHeight: '1.4',
-              overflow:   'hidden',
-              display:    '-webkit-box',
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: 'vertical',
-              fontStyle:  'italic',
-            }}>
-              {resource.wiki_content}
-            </p>
-          )}
 
           {/* Bioma */}
           {marker?.biome_id?.name && (
@@ -237,28 +175,55 @@ function ResourcePanel({ marker, onClose }) {
               </span>
             </div>
           )}
+
+          {/* Descripción — 2 líneas máx */}
+          {resource?.description && (
+            <p style={{
+              margin: 0, color: '#94a3b8', fontSize: '0.82rem', lineHeight: '1.5',
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+            }}>
+              {resource.description}
+            </p>
+          )}
+
+          {/* Wiki preview — 1 línea */}
+          {resource?.wiki_content && (
+            <p style={{
+              margin: 0, color: '#64748b', fontSize: '0.75rem', lineHeight: '1.4',
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', fontStyle: 'italic',
+            }}>
+              {resource.wiki_content}
+            </p>
+          )}
+
+          {/* Link a la wiki */}
+          <a
+            href={`/wiki/${resource?._id}`}
+            style={{
+              marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
+              gap: '4px', color: typeColor, fontSize: '0.75rem', fontWeight: '600',
+              textDecoration: 'none', opacity: 0.85, width: 'fit-content',
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 1}
+            onMouseLeave={e => e.currentTarget.style.opacity = 0.85}
+          >
+            Ver en la Wiki →
+          </a>
         </div>
 
         {/* Stats */}
         {statsEntries.length > 0 && (
           <div style={{
-            width:        '160px',
-            flexShrink:   0,
-            borderLeft:   '1px solid rgba(255,255,255,0.06)',
-            padding:      '16px',
-            display:      'flex',
-            flexDirection:'column',
-            gap:          '8px',
+            width: '160px', flexShrink: 0,
+            borderLeft: '1px solid rgba(255,255,255,0.06)',
+            padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '7px',
           }}>
             <span style={{
-              color:         '#475569',
-              fontSize:      '0.7rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              fontWeight:    '600',
-            }}>
-              Stats
-            </span>
+              color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
+              letterSpacing: '0.1em', fontWeight: '700',
+            }}>Stats</span>
             {statsEntries.map(([key, val]) => (
               <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'capitalize' }}>{key}</span>
@@ -271,32 +236,18 @@ function ResourcePanel({ marker, onClose }) {
         {/* Notas del marcador */}
         {marker?.notes && (
           <div style={{
-            width:       '140px',
-            flexShrink:  0,
-            borderLeft:  '1px solid rgba(255,255,255,0.06)',
-            padding:     '16px',
-            display:     'flex',
-            flexDirection:'column',
-            gap:         '6px',
+            width: '180px', flexShrink: 0,
+            borderLeft: '1px solid rgba(255,255,255,0.06)',
+            padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '6px',
           }}>
             <span style={{
-              color:         '#475569',
-              fontSize:      '0.7rem',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              fontWeight:    '600',
-            }}>
-              Notas
-            </span>
+              color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
+              letterSpacing: '0.1em', fontWeight: '700',
+            }}>Notas</span>
             <p style={{
-              margin:     0,
-              color:      '#94a3b8',
-              fontSize:   '0.75rem',
-              lineHeight: '1.4',
-              overflow:   'hidden',
-              display:    '-webkit-box',
-              WebkitLineClamp: 5,
-              WebkitBoxOrient: 'vertical',
+              margin: 0, color: '#94a3b8', fontSize: '0.78rem', lineHeight: '1.5',
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 6, WebkitBoxOrient: 'vertical',
             }}>
               {marker.notes}
             </p>
@@ -307,33 +258,21 @@ function ResourcePanel({ marker, onClose }) {
         <button
           onClick={onClose}
           style={{
-            position:   'absolute',
-            top:        '10px',
-            right:      '40px',
-            background: 'rgba(255,255,255,0.05)',
-            border:     '1px solid rgba(255,255,255,0.1)',
-            color:      '#64748b',
-            width:      '28px',
-            height:     '28px',
-            borderRadius: '50%',
-            cursor:     'pointer',
-            display:    'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize:   '0.8rem',
-            transition: 'all 0.2s',
+            position: 'absolute', top: '10px', right: '12px',
+            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+            color: '#64748b', width: '28px', height: '28px', borderRadius: '50%',
+            cursor: 'pointer', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', fontSize: '0.8rem', transition: 'all 0.2s',
           }}
           onMouseEnter={e => {
-            e.target.style.background = 'rgba(255,255,255,0.1)'
-            e.target.style.color = '#e2e8f0'
+            e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+            e.currentTarget.style.color = '#e2e8f0'
           }}
           onMouseLeave={e => {
-            e.target.style.background = 'rgba(255,255,255,0.05)'
-            e.target.style.color = '#64748b'
+            e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+            e.currentTarget.style.color = '#64748b'
           }}
-        >
-          ✕
-        </button>
+        >✕</button>
       </div>
     </div>
   )
@@ -505,7 +444,7 @@ export default function MapPage() {
               icon={markerIcons[marker.resource_id?.type] || markerIcons.default}
               eventHandlers={{
                 click: (e) => {
-                  L.DomEvent.stopPropagation(e)  // evita que dispare el click del mapa
+                  L.DomEvent.stopPropagation(e)
                   setSelectedMarker(marker)
                 },
               }}
