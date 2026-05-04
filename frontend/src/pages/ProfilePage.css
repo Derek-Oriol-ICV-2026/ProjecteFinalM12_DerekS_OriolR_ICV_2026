@@ -1,4 +1,3 @@
-/* ── Fondo ── */
 .bg {
   position: fixed;
   top: 80px;
@@ -14,7 +13,6 @@
   pointer-events: none;
 }
 
-/* ── Wrapper principal ── */
 .profile-wrapper {
   position: relative;
   width: 100%;
@@ -28,13 +26,11 @@
   padding-bottom: 40px;
 }
 
-/* ── Banner ── */
 .profile-banner {
   width: 100%;
   height: 120px;
 }
 
-/* ── Layout de dos columnas ── */
 .profile-body {
   display: flex;
   gap: 24px;
@@ -46,7 +42,6 @@
   box-sizing: border-box;
 }
 
-/* ── Columna izquierda ── */
 .profile-left {
   display: flex;
   flex-direction: column;
@@ -65,7 +60,14 @@
   align-items: center;
   justify-content: center;
   margin-top: -48px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .profile-info-list {
@@ -98,7 +100,6 @@
   font-size: 13px;
 }
 
-/* ── Card del formulario ── */
 .profile-card {
   flex: 1;
   background-color: #ffffff;
@@ -110,7 +111,6 @@
   align-items: center;
 }
 
-/* ── Reutilizados de LoginPage ── */
 .title {
   color: #0d1b2a;
   font-size: 20px;
@@ -118,6 +118,20 @@
   letter-spacing: 3px;
   text-transform: uppercase;
   margin-bottom: 24px;
+  width: 100%;
+  text-align: left;
+}
+
+.title-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title-row .title {
+  margin-bottom: 0;
 }
 
 .form {
@@ -164,12 +178,82 @@
   border-color: rgba(56, 189, 213, 0.8);
 }
 
+.input:disabled {
+  opacity: 0.6;
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
 .textarea {
   resize: vertical;
   min-height: 90px;
+  flex: 1;
 }
 
-/* ── Password con icono ── */
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+
+.file-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-button {
+  background-color: #38bdd5;
+  color: white;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.file-button:hover {
+  background-color: #2aa5bf;
+}
+
+.input-file {
+  display: none;
+}
+
+.file-button .input-file {
+  display: none;
+}
+
+.file-name {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.45);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #0d1b2a;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  box-sizing: border-box;
+}
+
 .input-password-wrap {
   flex: 1;
   position: relative;
@@ -194,7 +278,20 @@
   color: #7aabb8;
 }
 
-/* ── Error / Success ── */
+.input-hint {
+  color: #4a6a7a;
+  font-size: 11px;
+  margin-top: 3px;
+  display: block;
+}
+
+.input-hint-small {
+  color: #4a6a7a;
+  font-size: 11px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
 .error {
   width: 100%;
   background-color: rgba(200, 40, 40, 0.08);
@@ -221,7 +318,6 @@
   box-sizing: border-box;
 }
 
-/* ── Botón ── */
 .button {
   width: 100%;
   margin-top: 20px;
@@ -234,9 +330,57 @@
   font-weight: 500;
   cursor: pointer;
   letter-spacing: 0.5px;
+  transition: all 0.2s ease;
 }
 
 .button:hover {
   background-color: rgba(56, 189, 213, 0.08);
   border-color: rgba(56, 189, 213, 0.8);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.button-group .button {
+  flex: 1;
+  margin-top: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #4a6a7a;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .profile-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-card {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group .button {
+    width: 100%;
+  }
 }

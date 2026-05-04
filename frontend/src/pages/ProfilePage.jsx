@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState('')
+  const [fileName, setFileName] = useState('')
 
   useEffect(() => {
     if (user) {
@@ -59,15 +60,43 @@ export default function ProfilePage() {
     setForm(prev => ({ ...prev, [name]: value }))
   }
 
+  const compressImage = (file, callback) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = (event) => {
+      const img = new Image()
+      img.src = event.target.result
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        let width = img.width
+        let height = img.height
+        
+        if (width > 400 || height > 400) {
+          const ratio = Math.min(400 / width, 400 / height)
+          width = Math.round(width * ratio)
+          height = Math.round(height * ratio)
+        }
+        
+        canvas.width = width
+        canvas.height = height
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, width, height)
+        
+        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7)
+        callback(compressedDataUrl)
+      }
+    }
+  }
+
   const handleAvatarChange = (e) => {
     const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result)
-        setForm(prev => ({ ...prev, avatar: reader.result }))
-      }
-      reader.readAsDataURL(file)
+      setFileName(file.name)
+      
+      compressImage(file, (compressedDataUrl) => {
+        setAvatarPreview(compressedDataUrl)
+        setForm(prev => ({ ...prev, avatar: compressedDataUrl }))
+      })
     }
   }
 
@@ -84,6 +113,10 @@ export default function ProfilePage() {
     }
     if (!form.email.includes('@')) {
       setError('Email inválido')
+      return
+    }
+    if (parseInt(form.gamesPlayed) > 17) {
+      setError('Los logros no pueden superar 17')
       return
     }
 
@@ -123,6 +156,7 @@ export default function ProfilePage() {
       setSuccess('Perfil actualitzat correctament')
       setIsEditing(false)
       setForm(prev => ({ ...prev, password: '' }))
+      setFileName('')
       
       setTimeout(() => {
         loadProfile()
@@ -143,6 +177,7 @@ export default function ProfilePage() {
     setForm(prev => ({ ...prev, password: '' }))
     setError('')
     setSuccess('')
+    setFileName('')
     loadProfile()
   }
 
@@ -179,7 +214,7 @@ export default function ProfilePage() {
               <li>Rol: <span>{user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '—'}</span></li>
               <li>Membre des de: <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString('ca-ES') : '—'}</span></li>
               <li>Logros: <span>{form.gamesPlayed ?? '—'}</span></li>
-              <li>Temps de joc: <span>{form.score ?? '—'} h</span></li>
+              <li>Temps de joc: <span>{form.score ?? '—'} h </span></li>
             </ul>
           </div>
 
@@ -195,18 +230,19 @@ export default function ProfilePage() {
               {isEditing && (
                 <div className="row">
                   <label className="label">Foto de perfil:</label>
-                  <input 
-                    className="input input-file" 
-                    name="avatar" 
-                    type="file"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                  />
-                  {avatarPreview && (
-                    <div className="avatar-preview">
-                      <img src={avatarPreview} alt="Vista previa" />
-                    </div>
-                  )}
+                  <div className="file-input-wrapper">
+                    <label className="file-button">
+                      Examinar...
+                      <input 
+                        className="input-file" 
+                        name="avatar" 
+                        type="file"
+                        accept="image/*"
+                        onChange={handleAvatarChange}
+                      />
+                    </label>
+                    <span className="file-name">{fileName || 'Ningún archivo'}</span>
+                  </div>
                 </div>
               )}
 
@@ -278,9 +314,11 @@ export default function ProfilePage() {
                     name="gamesPlayed" 
                     type="number"
                     min="0"
+                    max="17"
                     value={form.gamesPlayed} 
                     onChange={handleChange}
                   />
+                  <span className="input-hint-small">(Máx 17)</span>
                 </div>
               )}
 
@@ -310,6 +348,7 @@ export default function ProfilePage() {
                   placeholder="Cuéntanos sobre ti..."
                 />
               </div>
+
               {!isEditing && (
                 <button 
                   type="button" 
@@ -324,14 +363,14 @@ export default function ProfilePage() {
                 <div className="button-group">
                   <button 
                     type="submit" 
-                    className="button button-primary"
+                    className="button"
                     disabled={loading}
                   >
                     {loading ? 'Guardant...' : 'Guardar canvis'}
                   </button>
                   <button 
                     type="button" 
-                    className="button button-secondary"
+                    className="button"
                     onClick={handleCancel}
                     disabled={loading}
                   >
