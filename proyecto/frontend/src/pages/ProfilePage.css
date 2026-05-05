@@ -1,0 +1,386 @@
+.bg {
+  position: fixed;
+  top: 80px;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 80px);
+  background-image: url('/registerFons.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: brightness(1.3);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.profile-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 80px);
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Segoe UI', sans-serif;
+  z-index: 10;
+  padding-bottom: 40px;
+}
+
+.profile-banner {
+  width: 100%;
+  height: 120px;
+}
+
+.profile-body {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 24px;
+  align-items: flex-start;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+.profile-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.profile-avatar-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 2px solid #b0c8d8;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -48px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.5);
+  border-radius: 10px;
+  padding: 16px 20px;
+  min-width: 160px;
+}
+
+.profile-info-list li {
+  font-size: 12px;
+  color: #4a6a7a;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-info-list li:last-child {
+  margin-bottom: 0;
+}
+
+.profile-info-list li span {
+  color: #0d1b2a;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.profile-card {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.5);
+  border-radius: 14px;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  color: #0d1b2a;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  width: 100%;
+  text-align: left;
+}
+
+.title-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title-row .title {
+  margin-bottom: 0;
+}
+
+.form {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 10px;
+}
+
+.row-textarea {
+  align-items: flex-start;
+}
+
+.label {
+  color: #1a3a4a;
+  font-size: 13px;
+  width: 130px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.label-top {
+  padding-top: 6px;
+}
+
+.input {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.45);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #0d1b2a;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.input:focus {
+  border-color: rgba(56, 189, 213, 0.8);
+}
+
+.input:disabled {
+  opacity: 0.6;
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 90px;
+  flex: 1;
+}
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+  display: none !important;
+}
+
+input[type="number"] {
+  appearance: textfield;
+}
+
+
+.file-input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-button {
+  background-color: #38bdd5;
+  color: white;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  user-select: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.file-button:hover {
+  background-color: #2aa5bf;
+}
+
+.input-file {
+  display: none;
+}
+
+.file-button .input-file {
+  display: none;
+}
+
+.file-name {
+  flex: 1;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.45);
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #0d1b2a;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  box-sizing: border-box;
+}
+
+.input-password-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-password-wrap .input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  line-height: 1;
+  color: #7aabb8;
+}
+
+.input-hint {
+  color: #4a6a7a;
+  font-size: 11px;
+  margin-top: 3px;
+  display: block;
+}
+
+.input-hint-small {
+  color: #4a6a7a;
+  font-size: 11px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.error {
+  width: 100%;
+  background-color: rgba(200, 40, 40, 0.08);
+  border: 1px solid rgba(200, 60, 60, 0.25);
+  border-radius: 6px;
+  color: #c0392b;
+  font-size: 12px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.success {
+  width: 100%;
+  background-color: rgba(40, 167, 69, 0.08);
+  border: 1px solid rgba(40, 167, 69, 0.25);
+  border-radius: 6px;
+  color: #1a6e30;
+  font-size: 12px;
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 11px;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(56, 189, 213, 0.5);
+  border-radius: 8px;
+  color: #0d1b2a;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: rgba(56, 189, 213, 0.08);
+  border-color: rgba(56, 189, 213, 0.8);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.button-group .button {
+  flex: 1;
+  margin-top: 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #4a6a7a;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .profile-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-card {
+    width: 100%;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .button-group .button {
+    width: 100%;
+  }
+}

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import SonarLogo from './SonarLogo'
 import './Navbar.css'
@@ -6,10 +6,15 @@ import './Navbar.css'
 export default function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleLogout = () => {
     logout()
     navigate('/login')
+  }
+
+  const isActive = (path) => {
+    return location.pathname.startsWith(path)
   }
 
   return (
@@ -21,8 +26,20 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-center">
-        <Link to="/" className="nav-link">Mapa</Link>
-        {user && <Link to="/wiki" className="nav-link">Wiki</Link>}
+        <Link 
+          to="/" 
+          className={`nav-link ${isActive('/') && !isActive('/wiki') ? 'active' : ''}`}
+        >
+          Mapa
+        </Link>
+        {user && (
+          <Link 
+            to="/wiki" 
+            className={`nav-link ${isActive('/wiki') ? 'active' : ''}`}
+          >
+            Wiki
+          </Link>
+        )}
       </div>
         
       <div className="navbar-right">
