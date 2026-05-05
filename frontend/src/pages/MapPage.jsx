@@ -278,9 +278,211 @@ function ResourcePanel({ marker, onClose }) {
   )
 }
 
+function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setActiveBiomes }) {
+  const [open, setOpen] = useState(false)
+
+  const uniqueBiomes = Object.values(
+    markers.reduce((acc, m) => {
+      if (m.biome_id?._id) acc[m.biome_id._id] = m.biome_id
+      return acc
+    }, {})
+  )
+
+  const toggleType = (type) => {
+    setActiveTypes(prev => {
+      const next = new Set(prev)
+      next.has(type) ? next.delete(type) : next.add(type)
+      return next
+    })
+  }
+
+  const toggleBiome = (id) => {
+    setActiveBiomes(prev => {
+      const next = new Set(prev)
+      next.has(id) ? next.delete(id) : next.add(id)
+      return next
+    })
+  }
+
+  const allTypesOn   = activeTypes.size === Object.keys(TYPE_LABELS).length
+  const allBiomesOn  = activeBiomes.size === uniqueBiomes.length
+  const anyFilterOff = !allTypesOn || !allBiomesOn
+
+  const resetAll = () => {
+    setActiveTypes(new Set(Object.keys(TYPE_LABELS)))
+    setActiveBiomes(new Set(uniqueBiomes.map(b => b._id)))
+  }
+
+  return (
+    <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 1000 }}>
+      {/* Botón toggle del panel */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        style={{
+          display:        'flex',
+          alignItems:     'center',
+          gap:            '6px',
+          background:     anyFilterOff ? 'rgba(96,165,250,0.25)' : 'rgba(8,16,36,0.88)',
+          border:         `1px solid ${anyFilterOff ? '#60a5fa' : 'rgba(96,165,250,0.3)'}`,
+          borderRadius:   '8px',
+          color:          anyFilterOff ? '#60a5fa' : '#94a3b8',
+          padding:        '8px 14px',
+          cursor:         'pointer',
+          fontWeight:     '600',
+          fontSize:       '0.82rem',
+          backdropFilter: 'blur(10px)',
+          transition:     'all 0.2s',
+          letterSpacing:  '0.04em',
+        }}
+      >
+        <span style={{ fontSize: '1rem' }}>⚙</span>
+        Filtros
+        {anyFilterOff && (
+          <span style={{
+            background: '#60a5fa', color: '#000', borderRadius: '10px',
+            padding: '1px 7px', fontSize: '0.7rem', fontWeight: '800',
+          }}>
+            {Object.keys(TYPE_LABELS).length - activeTypes.size + uniqueBiomes.length - activeBiomes.size}
+          </span>
+        )}
+      </button>
+
+      {/* Panel desplegable */}
+      {open && (
+        <div style={{
+          position:       'absolute',
+          top:            '44px',
+          right:          0,
+          width:          '260px',
+          background:     'rgba(8,16,36,0.96)',
+          border:         '1px solid rgba(96,165,250,0.2)',
+          borderRadius:   '12px',
+          backdropFilter: 'blur(16px)',
+          boxShadow:      '0 8px 32px rgba(0,0,0,0.6)',
+          padding:        '16px',
+          display:        'flex',
+          flexDirection:  'column',
+          gap:            '14px',
+        }}>
+
+          {/* Header */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ color: '#e2e8f0', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              Filtros del mapa
+            </span>
+            {anyFilterOff && (
+              <button onClick={resetAll} style={{
+                background: 'none', border: 'none', color: '#60a5fa',
+                fontSize: '0.72rem', cursor: 'pointer', fontWeight: '600',
+              }}>
+                Mostrar todo
+              </button>
+            )}
+          </div>
+
+          {/* Filtro por tipo */}
+          <div>
+            <div style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', marginBottom: '8px' }}>
+              Tipo
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {Object.entries(TYPE_LABELS).map(([type, label]) => {
+                const active = activeTypes.has(type)
+                const color  = TYPE_COLORS[type] || '#60a5fa'
+                return (
+                  <button
+                    key={type}
+                    onClick={() => toggleType(type)}
+                    style={{
+                      background:   active ? `${color}22` : 'rgba(255,255,255,0.04)',
+                      border:       `1px solid ${active ? color + '88' : 'rgba(255,255,255,0.1)'}`,
+                      color:        active ? color : '#475569',
+                      borderRadius: '20px',
+                      padding:      '4px 12px',
+                      cursor:       'pointer',
+                      fontSize:     '0.75rem',
+                      fontWeight:   '600',
+                      transition:   'all 0.15s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Separador */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
+
+          {/* Filtro por bioma */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <span style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>
+                Bioma
+              </span>
+              <button
+                onClick={() => {
+                  if (allBiomesOn) setActiveBiomes(new Set())
+                  else setActiveBiomes(new Set(uniqueBiomes.map(b => b._id)))
+                }}
+                style={{ background: 'none', border: 'none', color: '#475569', fontSize: '0.7rem', cursor: 'pointer' }}
+              >
+                {allBiomesOn ? 'Ninguno' : 'Todos'}
+              </button>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '200px', overflowY: 'auto' }}>
+              {uniqueBiomes.map(biome => {
+                const active = activeBiomes.has(biome._id)
+                const color  = biome.color || '#60a5fa'
+                return (
+                  <button
+                    key={biome._id}
+                    onClick={() => toggleBiome(biome._id)}
+                    style={{
+                      display:      'flex',
+                      alignItems:   'center',
+                      gap:          '8px',
+                      background:   active ? `${color}11` : 'transparent',
+                      border:       `1px solid ${active ? color + '44' : 'transparent'}`,
+                      borderRadius: '6px',
+                      padding:      '5px 8px',
+                      cursor:       'pointer',
+                      textAlign:    'left',
+                      transition:   'all 0.15s',
+                      width:        '100%',
+                    }}
+                  >
+                    <span style={{
+                      width: '10px', height: '10px', borderRadius: '50%', flexShrink: 0,
+                      background: active ? color : '#1e293b',
+                      border: `2px solid ${color}`,
+                      transition: 'all 0.15s',
+                    }} />
+                    <span style={{ color: active ? '#e2e8f0' : '#475569', fontSize: '0.78rem', fontWeight: '500' }}>
+                      {biome.name}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Contador */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', color: '#475569', fontSize: '0.72rem', textAlign: 'center' }}>
+            Mostrando marcadores de {activeTypes.size} tipo{activeTypes.size !== 1 ? 's' : ''} · {activeBiomes.size} bioma{activeBiomes.size !== 1 ? 's' : ''}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Componente principal ─────────────────────────────────────────────────────
 export default function MapPage() {
   const [markers, setMarkers] = useState([])
+  const [activeTypes, setActiveTypes] = useState(new Set(Object.keys(TYPE_LABELS)))
+  const [activeBiomes, setActiveBiomes] = useState(null) // null = todavía no inicializado
   const [isAlternativeVideo, setIsAlternativeVideo] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showButton, setShowButton] = useState(true)
@@ -290,9 +492,20 @@ export default function MapPage() {
 
   useEffect(() => {
     api.get('/markers')
-      .then(res => setMarkers(res.data))
+      .then(res => {
+        setMarkers(res.data)
+        // Inicializar todos los biomas como activos al cargar
+        const biomeIds = new Set(res.data.map(m => m.biome_id?._id).filter(Boolean))
+        setActiveBiomes(biomeIds)
+      })
       .catch(err => console.error(err))
   }, [])
+
+  // Marcadores filtrados
+  const filteredMarkers = markers.filter(m =>
+    activeTypes.has(m.resource_id?.type) &&
+    (activeBiomes === null || activeBiomes.has(m.biome_id?._id))
+  )
 
   useEffect(() => {
     if (videoRef.current) {
@@ -412,7 +625,7 @@ export default function MapPage() {
           }}
           maxZoom={2}
           minZoom={-3}
-          zoomSnap={0.5}
+          zoomSnap={0.2}
           attributionControl={false}
         >
           <ZoomControl position="topleft" />
@@ -437,7 +650,7 @@ export default function MapPage() {
           </SVGOverlay>
 
           {/* Marcadores */}
-          {markers.map(marker => (
+          {filteredMarkers.map(marker => (
             <Marker
               key={marker._id}
               position={[marker.y, marker.x]}
@@ -451,6 +664,17 @@ export default function MapPage() {
             />
           ))}
         </MapContainer>
+
+        {/* Panel de filtros */}
+        {activeBiomes !== null && (
+          <FilterPanel
+            markers={markers}
+            activeTypes={activeTypes}
+            setActiveTypes={setActiveTypes}
+            activeBiomes={activeBiomes}
+            setActiveBiomes={setActiveBiomes}
+          />
+        )}
 
         {/* Panel inferior del marcador seleccionado */}
         <ResourcePanel
