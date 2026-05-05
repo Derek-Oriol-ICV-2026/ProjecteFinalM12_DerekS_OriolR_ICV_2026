@@ -4,7 +4,7 @@ const resourceSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true, trim: true },
   type: { 
     type: String, 
-    enum: ['fauna', 'flora', 'mineral', 'poi', 'leviathan'], 
+    enum: ['fauna', 'flora', 'material', 'poi', 'leviathan'], 
     required: true 
   },
   description: { type: String, default: '' },
