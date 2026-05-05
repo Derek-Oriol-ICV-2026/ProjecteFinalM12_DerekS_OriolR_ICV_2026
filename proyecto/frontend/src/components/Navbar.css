@@ -1,3 +1,7 @@
+/* ===================================
+   ESTILOS DEL NAVBAR
+   =================================== */
+
 .navbar {
   position: fixed;
   top: 0;
@@ -16,6 +20,7 @@
   transition: all 0.3s ease;
 }
 
+/* LADO IZQUIERDO */
 .navbar-left {
   display: flex;
   gap: 2.5rem;
@@ -23,6 +28,7 @@
   flex-shrink: 0; 
 }
 
+/* CENTRO*/
 .navbar-center {
   position: absolute;
   left: 50%;
@@ -33,6 +39,7 @@
   align-items: center;
 }
 
+/* LADO DERECHO */
 .navbar-right {
   display: flex;
   gap: 1.5rem;
@@ -40,6 +47,7 @@
   flex-shrink: 0; 
 }
 
+/* LOGO + MARCA */
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -64,6 +72,7 @@
   letter-spacing: 0.5px;
 }
 
+/* LINKS DE NAVEGACIÓN */
 .nav-link {
   color: #ffffff;
   text-decoration: none;
@@ -93,18 +102,8 @@
   color: #60a5fa;
 }
 
-.nav-link.active {
-  background: rgba(96, 165, 250, 0.15);
-  border: 1.5px solid rgba(96, 165, 250, 0.6);
-  color: #60a5fa;
-  box-shadow: 0 0 8px rgba(96, 165, 250, 0.2);
-}
 
-.nav-link.active::after {
-  width: 0;
-}
-
-
+/* LINK DE USUARIO */
 .user-link {
   display: flex;
   align-items: center;
@@ -123,6 +122,7 @@
   letter-spacing: 0.5px;
 }
 
+/* BOTÓN DE LOGOUT */
 .logout-btn {
   background: transparent;
   border: 1.5px solid rgba(255, 255, 255, 0.3);
@@ -141,6 +141,7 @@
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
 }
 
+/* LINK DE REGISTRO */
 .register-link {
   background: rgba(96, 165, 250, 0.1);
   border: 1px solid rgba(96, 165, 250, 0.3);
@@ -154,6 +155,7 @@
   border-color: #60a5fa;
 }
 
+/* RESPONSIVE - TABLET */
 @media (max-width: 1024px) {
   .navbar {
     padding: 0.75rem 1.5rem;
@@ -169,6 +171,7 @@
   }
 }
 
+/* RESPONSIVE - MOBILE */
 @media (max-width: 768px) {
   .navbar {
     padding: 0.5rem 1rem;
@@ -209,6 +212,7 @@
   }
 }
 
+/* RESPONSIVE - MOBILE PEQUEÑO */
 @media (max-width: 480px) {
   .navbar {
     height: 60px;

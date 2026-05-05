@@ -1,0 +1,7 @@
+
+> backend@1.0.0 start
+> node server.js
+
+◇ injected env (3) from .env // tip: ⌘ enable debugging { debug: true }
+Servidor corriendo en puerto 5000
+MongoDB conectado
