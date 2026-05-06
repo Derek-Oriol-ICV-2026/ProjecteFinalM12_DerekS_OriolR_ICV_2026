@@ -10,7 +10,7 @@ export default function WikiPage() {
             id: 1,
             name: 'Materiales',
             icon: 'material',
-            path: '/wiki/materiales',
+            path: '/wiki/material',
             bgImage: 'fondoMateriales.webp'
         },
         {
@@ -29,16 +29,16 @@ export default function WikiPage() {
         },
         {
             id: 4,
-            name: 'Leviatanes',
+            name: 'Leviathan',
             icon: 'leviathans',
-            path: '/wiki/leviatanes',
+            path: '/wiki/leviathan',
             bgImage: 'fondoLeviatan.jpg'
         },
         {
             id: 5,
             name: 'PDIs',
             icon: 'pdis',
-            path: '/wiki/pdis',
+            path: '/wiki/poi',
             bgImage: 'fondoPdis.jpg'
         },
         {
