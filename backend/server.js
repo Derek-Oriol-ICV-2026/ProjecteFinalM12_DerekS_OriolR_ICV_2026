@@ -22,8 +22,9 @@ mongoose.connect(process.env.MONGO_URI)
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/resources', resourceRoutes)
-app.use('/api/biomes', biomeRoutes)
+app.use('/api/biomas/', biomeRoutes)
 app.use('/api/markers', markerRoutes)
 
 const PORT = process.env.PORT || 5000
-app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`))
+
+app.listen(PORT, () => console.log(`Servidor en ${PORT}`))
