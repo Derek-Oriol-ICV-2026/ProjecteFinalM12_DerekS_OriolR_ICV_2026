@@ -33,7 +33,7 @@ export default function LeviathanPage() {
             <div className="leviathan-page-content">
                 {/* Header */}
                 <div className="leviathan-header">
-                    <h1 className="leviathan-title">Leviathan</h1>
+                    <h1 className="leviathan-title">Leviatanes</h1>
                 </div>
 
                 {error && (

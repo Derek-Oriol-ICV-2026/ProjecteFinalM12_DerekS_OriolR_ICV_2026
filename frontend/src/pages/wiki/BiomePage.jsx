@@ -2,13 +2,20 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './BiomePage.css'
 import { biomeService } from '../../services/biomes'
+import { useAuth } from '../../context/AuthContext'
+import BiomeForm from './Forms/BiomeForm'
 
 export default function BiomePage() {
     const navigate = useNavigate()
+    const { user } = useAuth()
     const [biomas, setBiomas] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [showForm, setShowForm] = useState(false)
+    const [editingBiome, setEditingBiome] = useState(null)
+    const [formLoading, setFormLoading] = useState(false)
 
+    // Cargar biomas
     useEffect(() => {
         const fetchBiomas = async () => {
             try {
@@ -27,6 +34,39 @@ export default function BiomePage() {
 
         fetchBiomas()
     }, [])
+
+    // Manejar editar bioma
+    const handleEditBiome = (bioma) => {
+        setEditingBiome(bioma)
+        setShowForm(true)
+    }
+
+    // Manejar guardar (solo editar)
+    const handleSaveBiome = async (biomeData) => {
+        try {
+            setFormLoading(true)
+            if (editingBiome) {
+                // Actualizar
+                const result = await biomeService.updateBiome(editingBiome._id, biomeData)
+                if (result) {
+                    setBiomas(biomas.map(b => b._id === editingBiome._id ? result : b))
+                    setShowForm(false)
+                    setEditingBiome(null)
+                }
+            }
+        } catch (err) {
+            console.error('Error guardando bioma:', err)
+            alert('Error al guardar el bioma')
+        } finally {
+            setFormLoading(false)
+        }
+    }
+
+    // Cerrar formulario
+    const handleCloseForm = () => {
+        setShowForm(false)
+        setEditingBiome(null)
+    }
 
     return (
         <div className="bioma-page-wrapper">
@@ -81,17 +121,40 @@ export default function BiomePage() {
                                     <p className="bioma-item-description">{bioma.description}</p>
                                 </div>
 
-                                {/* Right: Coordinates Count */}
-                                <div className="bioma-item-coords">
-                                    {bioma.polygon_coords && bioma.polygon_coords.length > 0 ? (
-                                        <span className="coords-text">{bioma.polygon_coords.length} puntos</span>
-                                    ) : (
-                                        <span className="coords-text">-</span>
+                                {/* Right: Coordinates + Button */}
+                                <div className="bioma-item-actions">
+                                    <div className="bioma-item-coords">
+                                        {bioma.polygon_coords && bioma.polygon_coords.length > 0 ? (
+                                            <span className="coords-text">{bioma.polygon_coords.length} puntos</span>
+                                        ) : (
+                                            <span className="coords-text">-</span>
+                                        )}
+                                    </div>
+
+                                    {/* Botón solo para admins */}
+                                    {user && user.role === 'admin' && (
+                                        <button 
+                                            className="btn-edit"
+                                            onClick={() => handleEditBiome(bioma)}
+                                            title="Editar"
+                                        >
+                                            ✎
+                                        </button>
                                     )}
                                 </div>
                             </div>
                         ))}
                     </div>
+                )}
+
+                {/* Modal Formulario */}
+                {showForm && (
+                    <BiomeForm 
+                        biome={editingBiome}
+                        onSave={handleSaveBiome}
+                        onClose={handleCloseForm}
+                        loading={formLoading}
+                    />
                 )}
             </div>
         </div>
