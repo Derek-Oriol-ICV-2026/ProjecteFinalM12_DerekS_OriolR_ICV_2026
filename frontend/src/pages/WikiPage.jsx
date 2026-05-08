@@ -30,7 +30,7 @@ export default function WikiPage() {
         {
             id: 4,
             name: 'Leviathan',
-            icon: 'leviathans',
+            icon: 'leviathan',
             path: '/wiki/leviathan',
             bgImage: 'fondoLeviatan.jpg'
         },

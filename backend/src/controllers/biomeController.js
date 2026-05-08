@@ -30,7 +30,7 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const biome = await Biome.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const biome = await Biome.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' })
     res.json(biome)
   } catch (err) {
     res.status(400).json({ error: err.message })

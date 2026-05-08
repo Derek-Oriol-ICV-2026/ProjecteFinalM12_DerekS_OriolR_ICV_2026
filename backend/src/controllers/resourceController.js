@@ -32,7 +32,7 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const resource = await Resource.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const resource = await Resource.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' })
     res.json(resource)
   } catch (err) {
     res.status(400).json({ error: err.message })

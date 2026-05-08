@@ -9,7 +9,6 @@ export const getProfile = async (req, res) => {
       return res.status(404).json({ error: 'Usuario no encontrado' })
     }
 
-    // ✅ AGREGAR: Inicializar campos automáticamente si no existen
     const fieldsToAdd = {}
     if (user.birthDate === undefined) fieldsToAdd.birthDate = null
     if (user.message === undefined) fieldsToAdd.message = ''
@@ -21,10 +20,9 @@ export const getProfile = async (req, res) => {
       user = await User.findByIdAndUpdate(
         req.user.id,
         fieldsToAdd,
-        { new: true }
+        { returnDocument: 'after' }
       ).select('-password_hash')
     }
-    // ✅ FIN DEL AGREGAR
 
     res.json(user)
   } catch (err) {
@@ -40,12 +38,10 @@ export const updateProfile = async (req, res) => {
       return res.status(400).json({ error: 'Nombre de usuario y email son obligatorios' })
     }
 
-    // ✅ AGREGAR: Validar límite de logros
     const gamesPlayedNum = parseInt(gamesPlayed) || 0
     if (gamesPlayedNum > 17) {
       return res.status(400).json({ error: 'Los logros no pueden superar 17' })
     }
-    // ✅ FIN DEL AGREGAR
 
     const currentUser = await User.findById(req.user.id)
 
@@ -68,7 +64,7 @@ export const updateProfile = async (req, res) => {
       email,
       birthDate,
       message,
-      gamesPlayed: gamesPlayedNum, // ✅ CAMBIAR: Usar variable validada
+      gamesPlayed: gamesPlayedNum, 
       score: parseInt(score) || 0,
       avatar,
       updated_at: new Date()
@@ -82,7 +78,7 @@ export const updateProfile = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.user.id, 
       updateData, 
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).select('-password_hash')
 
     res.json({ 
@@ -129,7 +125,7 @@ export const assignRole = async (req, res) => {
         role,
         updated_at: new Date()
       }, 
-      { new: true }
+      { returnDocument: 'after' }
     ).select('-password_hash')
 
     res.json({ 

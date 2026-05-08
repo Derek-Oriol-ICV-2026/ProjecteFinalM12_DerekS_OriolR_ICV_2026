@@ -115,6 +115,11 @@
   max-height: 100px;
 }
 
+.wiki-svg-box:nth-child(4) svg {
+  width: 200% !important;
+  height: 200% !important;
+}
+
 .wiki-card-name {
   color: #ffffff;
   font-size: 22px;

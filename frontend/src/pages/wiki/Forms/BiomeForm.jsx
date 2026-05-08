@@ -11,7 +11,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
 
     const [errors, setErrors] = useState({})
 
-    // Cargar datos del bioma si estamos editando
     useEffect(() => {
         if (biome) {
             setFormData({
@@ -23,7 +22,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
         }
     }, [biome])
 
-    // Validar formulario
     const validateForm = () => {
         const newErrors = {}
 
@@ -35,7 +33,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
             newErrors.color = 'El color es requerido'
         }
 
-        // Validar que el color sea un hex válido
         if (!/^#[0-9A-F]{6}$/i.test(formData.color)) {
             newErrors.color = 'Color hex inválido (ej: #FF0000)'
         }
@@ -44,14 +41,12 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
         return Object.keys(newErrors).length === 0
     }
 
-    // Manejar cambios en inputs
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData(prev => ({
             ...prev,
             [name]: value
         }))
-        // Limpiar error del campo
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -60,7 +55,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
         }
     }
 
-    // Manejar submit
     const handleSubmit = (e) => {
         e.preventDefault()
         

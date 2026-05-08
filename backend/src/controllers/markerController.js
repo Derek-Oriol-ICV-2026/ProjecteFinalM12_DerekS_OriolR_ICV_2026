@@ -34,7 +34,7 @@ export const create = async (req, res) => {
 
 export const update = async (req, res) => {
   try {
-    const marker = await MapMarker.findByIdAndUpdate(req.params.id, req.body, { new: true })
+    const marker = await MapMarker.findByIdAndUpdate(req.params.id, req.body, { returnDocument: 'after' })
     res.json(marker)
   } catch (err) {
     res.status(400).json({ error: err.message })
