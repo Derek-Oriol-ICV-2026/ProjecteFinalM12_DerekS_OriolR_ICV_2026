@@ -5,8 +5,8 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import api from '../services/api'
 import { SubnauticaMapPaths } from '../components/SubnauticaMapSVG'
+import { DragDropResourceTool } from '../components/DragDropResourceTool'
 
-// ─── Colores por bioma ────────────────────────────────────────────────────────
 const BIOME_COLORS = {
   aguas_seguras:             '#00d4ff',
   bosque_de_algas:           '#2d8a4e',
@@ -59,7 +59,6 @@ const TYPE_COLORS = {
   leviathan: '#fb7185',
 }
 
-// ─── Bounds ───────────────────────────────────────────────────────────────────
 const SVG_W = 3439
 const SVG_H = 3579
 const SCALE = 4000 / SVG_H
@@ -67,13 +66,11 @@ const HALF_W = (SVG_W * SCALE) / 2
 const HALF_H = 2000
 const SVG_BOUNDS = [[-HALF_H, -HALF_W], [HALF_H, HALF_W]]
 
-// ─── Cierra el panel al hacer click en el mapa (fuera de marcador) ────────────
 function MapClickHandler({ onMapClick }) {
   useMapEvents({ click: onMapClick })
   return null
 }
 
-// ─── Panel inferior de información del marcador ───────────────────────────────
 function ResourcePanel({ marker, onClose }) {
   const resource = marker?.resource_id
   const visible = !!marker
@@ -478,30 +475,31 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
   )
 }
 
-// ─── Componente principal ─────────────────────────────────────────────────────
 export default function MapPage() {
   const [markers, setMarkers] = useState([])
   const [activeTypes, setActiveTypes] = useState(new Set(Object.keys(TYPE_LABELS)))
-  const [activeBiomes, setActiveBiomes] = useState(null) // null = todavía no inicializado
+  const [activeBiomes, setActiveBiomes] = useState(null)
   const [isAlternativeVideo, setIsAlternativeVideo] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [showButton, setShowButton] = useState(true)
   const [hoveredBiome, setHoveredBiome] = useState(null)
   const [selectedMarker, setSelectedMarker] = useState(null)
+  const [showUploadTool, setShowUploadTool] = useState(false)
+  
+  const mapRef = useRef(null)
+  
   const videoRef = useRef(null)
 
   useEffect(() => {
     api.get('/markers')
       .then(res => {
         setMarkers(res.data)
-        // Inicializar todos los biomas como activos al cargar
         const biomeIds = new Set(res.data.map(m => m.biome_id?._id).filter(Boolean))
         setActiveBiomes(biomeIds)
       })
       .catch(err => console.error(err))
   }, [])
 
-  // Marcadores filtrados
   const filteredMarkers = markers.filter(m =>
     activeTypes.has(m.resource_id?.type) &&
     (activeBiomes === null || activeBiomes.has(m.biome_id?._id))
@@ -534,6 +532,14 @@ export default function MapPage() {
         }, 500)
       }, 500)
     }
+  }
+
+  const handleMarkerCreated = () => {
+    api.get('/markers')
+      .then(res => {
+        setMarkers(res.data)
+      })
+      .catch(err => console.error(err))
   }
 
   return (
@@ -612,6 +618,7 @@ export default function MapPage() {
         overflow: 'visible',
       }}>
         <MapContainer
+          ref={mapRef}
           zoomControl={false}
           crs={L.CRS.Simple}
           bounds={SVG_BOUNDS}
@@ -649,6 +656,31 @@ export default function MapPage() {
             </svg>
           </SVGOverlay>
 
+          {/* Botón para mostrar/ocultar herramienta de carga */}
+          <button
+            onClick={() => setShowUploadTool(!showUploadTool)}
+            style={{
+              position: 'absolute',
+              top: '46px',       
+              left: '60px',
+              zIndex: 500,
+              background: 'rgba(0, 212, 255, 0.2)',
+              border: '2px solid #00d4ff',
+              color: '#00d4ff',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              backdropFilter: 'blur(8px)',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={e => e.target.style.background = 'rgba(0, 212, 255, 0.3)'}
+            onMouseLeave={e => e.target.style.background = 'rgba(0, 212, 255, 0.2)'}
+          >
+            📍 {showUploadTool ? 'Cerrar' : 'Cargar Datos'}
+          </button>
+
+
           {/* Marcadores */}
           {filteredMarkers.map(marker => (
             <Marker
@@ -664,6 +696,15 @@ export default function MapPage() {
             />
           ))}
         </MapContainer>
+
+        {showUploadTool && (
+          <DragDropResourceTool
+            mapRef={mapRef}
+            onClose={() => setShowUploadTool(false)}
+            onMarkerCreated={handleMarkerCreated}
+          />
+        )}
+
 
         {/* Panel de filtros */}
         {activeBiomes !== null && (
