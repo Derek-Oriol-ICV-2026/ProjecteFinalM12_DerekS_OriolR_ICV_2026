@@ -37,7 +37,7 @@ export default function WikiPage() {
         {
             id: 5,
             name: 'PDIs',
-            icon: 'pdis',
+            icon: 'poi',
             path: '/wiki/poi',
             bgImage: 'fondoPdis.jpg'
         },

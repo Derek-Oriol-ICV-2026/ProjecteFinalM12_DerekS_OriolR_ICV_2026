@@ -30,6 +30,18 @@ export const getProfile = async (req, res) => {
   }
 }
 
+export const getProgressByMarker = async (req, res) => {
+  const userId = req.user.id
+  const { markerId } = req.params
+
+  const progress = await UserProgress.findOne({
+    user_id: userId,
+    marker_id: markerId
+  })
+
+  res.json(progress || null)
+}
+
 export const updateProfile = async (req, res) => {
   try {
     const { username, email, password, birthDate, message, gamesPlayed, score, avatar } = req.body
@@ -69,6 +81,8 @@ export const updateProfile = async (req, res) => {
       avatar,
       updated_at: new Date()
     }
+
+
 
     if (password && password.trim()) {
       const hashedPassword = await bcrypt.hash(password, 10)
@@ -132,6 +146,30 @@ export const assignRole = async (req, res) => {
       message: 'Rol asignado correctamente',
       user: updatedUser 
     })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+export const updateNote = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { marker_id, personal_note } = req.body
+
+    if (req.user.role !== 'premium' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'No autorizado' })
+    }
+
+    const updated = await UserProgress.findOneAndUpdate(
+      { user_id: userId, marker_id },
+      {
+        personal_note,
+        updated_at: new Date()
+      },
+      { new: true, upsert: true }
+    )
+
+    res.json(updated)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

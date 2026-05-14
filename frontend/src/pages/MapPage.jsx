@@ -49,6 +49,7 @@ const TYPE_LABELS = {
   material:   'Material',
   poi:       'Punto de interés',
   leviathan: 'Leviatán',
+  notas: 'Notas',
 }
 
 const TYPE_COLORS = {
@@ -57,6 +58,7 @@ const TYPE_COLORS = {
   material:   '#fbbf24',
   poi:       '#a78bfa',
   leviathan: '#fb7185',
+  notas: 'Notas',
 }
 
 const SVG_W = 3439
@@ -75,6 +77,8 @@ function ResourcePanel({ marker, onClose }) {
   const resource = marker?.resource_id
   const visible = !!marker
   const typeColor = TYPE_COLORS[resource?.type] || '#60a5fa'
+  const user = JSON.parse(localStorage.getItem('user'))
+  const isAdmin = user?.role === 'admin'
 
   const stats = resource?.stats
     ? (resource.stats instanceof Map
@@ -226,6 +230,37 @@ function ResourcePanel({ marker, onClose }) {
           >
             Ver en la Wiki →
           </a>
+          {isAdmin && (
+            <button
+              onClick={async () => {
+                if (!confirm('¿Seguro que quieres eliminar este POI?')) return
+                await api.delete(`/markers/${marker._id}`)
+                onClose()
+                window.location.reload()
+              }}
+              style={{
+                marginTop: '8px',
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.4)',
+                color: '#ef4444',
+                padding: '4px 10px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontSize: '0.7rem',
+                fontWeight: '600',
+                transition: 'all 0.2s',
+                width: 'fit-content',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'
+              }}
+            >
+              🗑 Eliminar
+            </button>
+          )}
           </div>
         )}
 
@@ -484,10 +519,16 @@ export default function MapPage() {
   const [hoveredBiome, setHoveredBiome] = useState(null)
   const [selectedMarker, setSelectedMarker] = useState(null)
   const [showUploadTool, setShowUploadTool] = useState(false)
+  const [showNotesTool, setShowNotesTool] = useState(false)
   
   const mapRef = useRef(null)
   
   const videoRef = useRef(null)
+
+  const user = JSON.parse(localStorage.getItem('user'))
+  const isPremiumOrAbove =
+    user?.role === 'premium' || user?.role === 'admin'
+
 
   useEffect(() => {
     api.get('/markers')
@@ -656,29 +697,30 @@ export default function MapPage() {
           </SVGOverlay>
 
           {/* Botón para mostrar/ocultar herramienta de carga */}
-          <button
-            onClick={() => setShowUploadTool(!showUploadTool)}
-            style={{
-              position: 'absolute',
-              top: '46px',       
-              left: '60px',
-              zIndex: 500,
-              background: 'rgba(0, 212, 255, 0.2)',
-              border: '2px solid #00d4ff',
-              color: '#00d4ff',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontWeight: '600',
-              backdropFilter: 'blur(8px)',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseEnter={e => e.target.style.background = 'rgba(0, 212, 255, 0.3)'}
-            onMouseLeave={e => e.target.style.background = 'rgba(0, 212, 255, 0.2)'}
-          >
-            📍 {showUploadTool ? 'Cerrar' : 'Cargar Datos'}
-          </button>
-
+          {isPremiumOrAbove && (
+            <button
+              onClick={() => setShowUploadTool(!showUploadTool)}
+              style={{
+                position: 'absolute',
+                top: '46px',       
+                left: '60px',
+                zIndex: 500,
+                background: 'rgba(0, 212, 255, 0.2)',
+                border: '2px solid #00d4ff',
+                color: '#00d4ff',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+                backdropFilter: 'blur(8px)',
+                transition: 'all 0.3s ease',
+              }}
+              onMouseEnter={e => e.target.style.background = 'rgba(0, 212, 255, 0.3)'}
+              onMouseLeave={e => e.target.style.background = 'rgba(0, 212, 255, 0.2)'}
+            >
+              📍 {showUploadTool ? 'Cerrar' : 'Cargar Datos'}
+            </button>
+          )}
 
           {/* Marcadores */}
           {filteredMarkers.map(marker => (
