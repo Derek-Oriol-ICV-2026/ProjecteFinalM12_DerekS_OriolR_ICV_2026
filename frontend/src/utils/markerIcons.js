@@ -70,7 +70,7 @@ export const markerIcons = {
   fauna: makeSVGIcon(SVG_FAUNA),
   flora: makeSVGIcon(SVG_FLORA),
   material: makeSVGIcon(SVG_MATERIAL),
-  pdis: makePNGIcon('/Pdi.webp'),
+  pdis: makePNGIcon('/pdi.png'),
   leviathan: makePNGIcon('/leviathan.png'),
   biomas: makeSVGIcon(SVG_BIOMES),
   default: makeSVGIcon(SVG_FAUNA),

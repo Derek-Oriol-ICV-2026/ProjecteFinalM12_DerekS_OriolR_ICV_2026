@@ -7,7 +7,7 @@ const MARKER_TYPES = {
   fauna:     { label: 'Fauna',    icon: markerIcons.fauna?.options?.html, color: '#ff6b6b', desc: 'Criaturas marinas' },
   flora:     { label: 'Flora',    icon: markerIcons.flora?.options?.html, color: '#4ade80', desc: 'Plantas y algas'   },
   material:  { label: 'Material', icon: markerIcons.material?.options?.html, color: '#fbbf24', desc: 'Recursos y minerales' },
-  poi:       { label: 'PDI',      icon: markerIcons.pdi?.options?.html, color: '#a78bfa', desc: 'Puntos de interés' },
+  poi:       { label: 'PDI',      icon: markerIcons.pdis?.options?.html, color: '#a78bfa', desc: 'Puntos de interés' },
   leviathan: { label: 'Leviatán', icon: markerIcons.leviathan?.options?.html, color: '#fb7185', desc: 'Leviatanes'        },
 }
 

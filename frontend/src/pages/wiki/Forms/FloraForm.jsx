@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react'
-import './FaunaForm.css'
+import './FloraForm.css'
 
-export default function FaunaForm({ fauna, onSave, onClose, loading }) {
+export default function FloraForm({ flora, onSave, onClose, loading }) {
     const [formData, setFormData] = useState({ name: '', description: '', image_url: '', stats: { value: '' } })
     const [errors, setErrors] = useState({})
 
     useEffect(() => {
-        if (fauna) setFormData({
-            name: fauna.name || '',
-            description: fauna.description || '',
-            image_url: fauna.image_url || '',
-            stats: { value: fauna.stats?.value || '' }
+        if (flora) setFormData({
+            name: flora.name || '',
+            description: flora.description || '',
+            image_url: flora.image_url || '',
+            stats: { value: flora.stats?.value || '' }
         })
-    }, [fauna])
+    }, [flora])
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -21,14 +21,14 @@ export default function FaunaForm({ fauna, onSave, onClose, loading }) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        if (formData.name.trim()) onSave({ ...formData, type: 'fauna' })
+        if (formData.name.trim()) onSave({ ...formData, type: 'flora' })
     }
 
     return (
         <div className="form-overlay">
             <div className="form-container">
                 <div className="form-header">
-                    <h2>{fauna ? 'Editar Fauna' : 'Crear Fauna'}</h2>
+                    <h2>{flora ? 'Editar Flora' : 'Crear Flora'}</h2>
                     <button className="btn-close" onClick={onClose}>✕</button>
                 </div>
                 <form onSubmit={handleSubmit} className="form">
@@ -50,7 +50,7 @@ export default function FaunaForm({ fauna, onSave, onClose, loading }) {
                     </div>
                     <div className="form-buttons">
                         <button type="button" className="btn-cancel" onClick={onClose} disabled={loading}>Cancelar</button>
-                        <button type="submit" className="btn-save" disabled={loading}>{loading ? 'Guardando...' : (fauna ? 'Actualizar' : 'Crear')}</button>
+                        <button type="submit" className="btn-save" disabled={loading}>{loading ? 'Guardando...' : (flora ? 'Actualizar' : 'Crear')}</button>
                     </div>
                 </form>
             </div>

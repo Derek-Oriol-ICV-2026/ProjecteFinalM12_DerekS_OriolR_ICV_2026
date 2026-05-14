@@ -194,20 +194,6 @@ function ResourcePanel({ marker, onClose }) {
               {resource.wiki_content}
             </p>
           )}
-
-          {/* Link a la wiki */}
-          <a
-            href={`/wiki/${resource?._id}`}
-            style={{
-              marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
-              gap: '4px', color: typeColor, fontSize: '0.75rem', fontWeight: '600',
-              textDecoration: 'none', opacity: 0.85, width: 'fit-content',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = 1}
-            onMouseLeave={e => e.currentTarget.style.opacity = 0.85}
-          >
-            Ver en la Wiki →
-          </a>
         </div>
 
         {/* Stats */}
@@ -227,6 +213,19 @@ function ResourcePanel({ marker, onClose }) {
                 <span style={{ color: '#e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>{val}</span>
               </div>
             ))}
+            {/* Link a la wiki */}
+          <a
+            href={`/wiki/${resource?.type}`}
+            style={{
+              marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
+              gap: '4px', color: typeColor, fontSize: '0.75rem', fontWeight: '600',
+              textDecoration: 'none', opacity: 0.85, width: 'fit-content',
+            }}
+            onMouseEnter={e => e.currentTarget.style.opacity = 1}
+            onMouseLeave={e => e.currentTarget.style.opacity = 0.85}
+          >
+            Ver en la Wiki →
+          </a>
           </div>
         )}
 
