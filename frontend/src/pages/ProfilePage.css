@@ -364,7 +364,6 @@ input[type="number"] {
   font-size: 1.1rem;
 }
 
-/* ── ADMIN PANEL ─────────────────────────────────── */
 
 .admin-panel {
   width: 300px;
@@ -511,7 +510,6 @@ input[type="number"] {
   color: #0d1b2a;
 }
 
-/* Role badges */
 .role-badge {
   display: inline-block;
   font-size: 10px;
@@ -541,7 +539,6 @@ input[type="number"] {
   border: 1px solid rgba(56, 189, 213, 0.25);
 }
 
-/* Role change buttons */
 .admin-role-buttons {
   display: flex;
   gap: 6px;
