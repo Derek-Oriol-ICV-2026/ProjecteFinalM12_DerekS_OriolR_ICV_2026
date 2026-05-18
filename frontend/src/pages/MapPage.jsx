@@ -110,10 +110,8 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
         height:         '160px',
       }}>
 
-        {/* Banda de color */}
         <div style={{ width: '4px', background: typeColor, flexShrink: 0 }} />
 
-        {/* Imagen / icono */}
         <div style={{
           width: '140px', flexShrink: 0,
           background: 'rgba(0,0,0,0.3)',
@@ -140,7 +138,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           )}
         </div>
 
-        {/* Info principal */}
         <div style={{
           flex: 1, padding: '14px 20px', display: 'flex',
           flexDirection: 'column', gap: '6px', overflow: 'hidden',
@@ -202,7 +199,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           )}
         </div>
 
-        {/* Stats (solo para marcadores de recurso) */}
         {!isPersonalNote && statsEntries.length > 0 && (
           <div style={{
             width: '160px', flexShrink: 0,
@@ -265,7 +261,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           </div>
         )}
 
-        {/* Columna de notas del marcador (solo para marcadores de recurso con notes) */}
         {!isPersonalNote && marker?.notes && (
           <div style={{
             width: '180px', flexShrink: 0,
@@ -285,7 +280,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           </div>
         )}
 
-        {/* Botón eliminar nota personal */}
         {isPersonalNote && (
           <div style={{
             width: '120px', flexShrink: 0,
@@ -312,7 +306,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           </div>
         )}
 
-        {/* Botón cerrar */}
         <button
           onClick={onClose}
           style={{
@@ -574,7 +567,6 @@ export default function MapPage() {
 
   return (
     <>
-      {/* VIDEO DE FONDO */}
       <video
         ref={videoRef}
         onEnded={handleVideoEnd}
@@ -602,7 +594,6 @@ export default function MapPage() {
         />
       </video>
 
-      {/* BOTÓN FLOTANTE */}
       {showButton && (
         <button
           onClick={handleVideoChange}
@@ -630,9 +621,8 @@ export default function MapPage() {
         </button>
       )}
 
-      {/* MAPA */}
       <div style={{
-        height:    '90vh',
+        height:    '95vh',
         width:     '100%',
         marginTop: '80px',
         padding:   '30px',
@@ -679,7 +669,6 @@ export default function MapPage() {
             </svg>
           </SVGOverlay>
 
-          {/* Botón herramienta de carga */}
           {isPremiumOrAbove && (
             <button
               onClick={() => setShowUploadTool(!showUploadTool)}
@@ -705,7 +694,6 @@ export default function MapPage() {
             </button>
           )}
 
-          {/* Marcadores de recursos */}
           {filteredMarkers.map(marker => (
             <Marker
               key={marker._id}
@@ -720,7 +708,6 @@ export default function MapPage() {
             />
           ))}
 
-          {/* Notas personales */}
           {isPremiumOrAbove && showNotesOnMap && personalNotes.map(note => (
             <Marker
               key={note._id}
@@ -736,7 +723,6 @@ export default function MapPage() {
           ))}
         </MapContainer>
 
-        {/* Herramienta drag & drop */}
         {showUploadTool && (
           <DragDropResourceTool
             mapRef={mapRef}
@@ -745,7 +731,6 @@ export default function MapPage() {
           />
         )}
 
-        {/* Panel de filtros */}
         {activeBiomes !== null && (
           <FilterPanel
             markers={markers}
@@ -756,7 +741,6 @@ export default function MapPage() {
           />
         )}
 
-        {/* Panel inferior del marcador seleccionado */}
         <ResourcePanel
           marker={selectedMarker}
           onClose={handleClosePanel}
@@ -766,7 +750,6 @@ export default function MapPage() {
           setNoteLoading={setNoteLoading}
         />
 
-        {/* Tooltip del bioma hovereado */}
         {hoveredBiome && !selectedMarker && (
           <div style={{
             position:       'absolute',
@@ -793,7 +776,6 @@ export default function MapPage() {
         )}
       </div>
 
-      {/* SECCIÓN SCROLL */}
       <div style={{
         minHeight:  '100vh',
         background: 'rgba(10,22,40,0.8)',
