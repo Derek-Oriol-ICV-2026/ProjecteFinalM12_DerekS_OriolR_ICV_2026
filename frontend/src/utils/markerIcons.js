@@ -67,11 +67,18 @@ function makeSVGIcon(svgString) {
 }
 
 export const markerIcons = {
-  fauna: makeSVGIcon(SVG_FAUNA),
-  flora: makeSVGIcon(SVG_FLORA),
-  material: makeSVGIcon(SVG_MATERIAL),
-  poi: makePNGIcon('/pdi.png'),
+  fauna:     makeSVGIcon(SVG_FAUNA),
+  flora:     makeSVGIcon(SVG_FLORA),
+  material:  makeSVGIcon(SVG_MATERIAL),
+  poi:       makePNGIcon('/pdi.png'),
   leviathan: makePNGIcon('/leviathan.png'),
-  biomas: makeSVGIcon(SVG_BIOMES),
-  default: makeSVGIcon(SVG_FAUNA),
-};
+  notas:     makeSVGIcon(`<svg width="28" height="36" viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="24" height="30" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+    <line x1="7" y1="10" x2="21" y2="10" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="7" y1="15" x2="21" y2="15" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="7" y1="20" x2="15" y2="20" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round"/>
+    <polygon points="14,36 10,28 18,28" fill="#38bdf8"/>
+  </svg>`),
+  biomas:    makeSVGIcon(SVG_BIOMES),
+  default:   makeSVGIcon(SVG_FAUNA),
+}

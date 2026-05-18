@@ -46,19 +46,19 @@ const BIOME_NAMES = {
 const TYPE_LABELS = {
   fauna:     'Fauna',
   flora:     'Flora',
-  material:   'Material',
+  material:  'Material',
   poi:       'Punto de interés',
   leviathan: 'Leviatán',
-  notas: 'Notas',
+  notas:     'Notas',
 }
 
 const TYPE_COLORS = {
   fauna:     '#ff6b6b',
   flora:     '#4ade80',
-  material:   '#fbbf24',
+  material:  '#fbbf24',
   poi:       '#a78bfa',
   leviathan: '#fb7185',
-  notas: 'Notas',
+  notas:     '#38bdf8',
 }
 
 const SVG_W = 3439
@@ -73,17 +73,17 @@ function MapClickHandler({ onMapClick }) {
   return null
 }
 
-function ResourcePanel({ marker, onClose }) {
-  const resource = marker?.resource_id
-  const visible = !!marker
-  const typeColor = TYPE_COLORS[resource?.type] || '#60a5fa'
-  const user = JSON.parse(localStorage.getItem('user'))
+function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, setNoteLoading }) {
+  const isPersonalNote = marker?.isPersonalNote
+  const resource       = marker?.resource_id
+  const visible        = !!marker
+  const typeColor      = isPersonalNote ? TYPE_COLORS.notas : (TYPE_COLORS[resource?.type] || '#60a5fa')
+
+  const user    = JSON.parse(localStorage.getItem('user'))
   const isAdmin = user?.role === 'admin'
 
-  const stats = resource?.stats
-    ? (resource.stats instanceof Map
-        ? Object.fromEntries(resource.stats)
-        : typeof resource.stats === 'object' ? resource.stats : {})
+  const stats        = resource?.stats
+    ? (resource.stats instanceof Map ? Object.fromEntries(resource.stats) : typeof resource.stats === 'object' ? resource.stats : {})
     : {}
   const statsEntries = Object.entries(stats)
 
@@ -110,35 +110,32 @@ function ResourcePanel({ marker, onClose }) {
         height:         '160px',
       }}>
 
-        {/* Banda de color tipo */}
+        {/* Banda de color */}
         <div style={{ width: '4px', background: typeColor, flexShrink: 0 }} />
 
-        {/* Imagen */}
+        {/* Imagen / icono */}
         <div style={{
-          width:          '140px',
-          flexShrink:     0,
-          background:     'rgba(0,0,0,0.3)',
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'center',
-          overflow:       'hidden',
+          width: '140px', flexShrink: 0,
+          background: 'rgba(0,0,0,0.3)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
         }}>
-          {resource?.image_url ? (
-            <img
-              src={resource.image_url}
-              alt={resource.name}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+          {isPersonalNote ? (
+            <div style={{
+              width: '60px', height: '60px', borderRadius: '50%',
+              background: `${typeColor}22`, border: `2px solid ${typeColor}55`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.8rem',
+            }}>
+              📝
+            </div>
+          ) : resource?.image_url ? (
+            <img src={resource.image_url} alt={resource.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           ) : (
             <div style={{
               width: '60px', height: '60px', borderRadius: '50%',
               background: `${typeColor}22`, border: `2px solid ${typeColor}55`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
             }}>
-              {resource?.type === 'fauna'     ? '🐟' :
-               resource?.type === 'flora'     ? '🌿' :
-               resource?.type === 'material'   ? '💎' :
-               resource?.type === 'leviathan' ? '🦑' : '📍'}
+              {resource?.type === 'fauna' ? '🐟' : resource?.type === 'flora' ? '🌿' : resource?.type === 'material' ? '💎' : resource?.type === 'leviathan' ? '🦑' : '📍'}
             </div>
           )}
         </div>
@@ -149,7 +146,6 @@ function ResourcePanel({ marker, onClose }) {
           flexDirection: 'column', gap: '6px', overflow: 'hidden',
           borderLeft: '1px solid rgba(255,255,255,0.06)',
         }}>
-          {/* Badge tipo + nombre */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span style={{
               background: `${typeColor}22`, border: `1px solid ${typeColor}66`,
@@ -157,124 +153,128 @@ function ResourcePanel({ marker, onClose }) {
               fontSize: '0.7rem', fontWeight: '700', textTransform: 'uppercase',
               letterSpacing: '0.08em', flexShrink: 0,
             }}>
-              {TYPE_LABELS[resource?.type] || resource?.type}
+              {isPersonalNote ? 'Nota personal' : (TYPE_LABELS[resource?.type] || resource?.type)}
             </span>
             <h3 style={{
               margin: 0, color: '#e2e8f0', fontSize: '1.1rem', fontWeight: '700',
               whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
             }}>
-              {resource?.name}
+              {isPersonalNote ? 'Mi nota' : resource?.name}
             </h3>
           </div>
 
-          {/* Bioma */}
           {marker?.biome_id?.name && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ color: '#475569', fontSize: '0.75rem' }}>Bioma:</span>
-              <span style={{ color: '#7dd3fc', fontSize: '0.75rem', fontWeight: '600' }}>
-                {marker.biome_id.name}
-              </span>
+              <span style={{ color: '#7dd3fc', fontSize: '0.75rem', fontWeight: '600' }}>{marker.biome_id.name}</span>
             </div>
           )}
 
-          {/* Descripción — 2 líneas máx */}
-          {resource?.description && (
+          {isPersonalNote ? (
             <p style={{
               margin: 0, color: '#94a3b8', fontSize: '0.82rem', lineHeight: '1.5',
               overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
             }}>
-              {resource.description}
+              {marker.note}
             </p>
-          )}
-
-          {/* Wiki preview — 1 línea */}
-          {resource?.wiki_content && (
-            <p style={{
-              margin: 0, color: '#64748b', fontSize: '0.75rem', lineHeight: '1.4',
-              overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', fontStyle: 'italic',
-            }}>
-              {resource.wiki_content}
-            </p>
+          ) : (
+            <>
+              {resource?.description && (
+                <p style={{
+                  margin: 0, color: '#94a3b8', fontSize: '0.82rem', lineHeight: '1.5',
+                  overflow: 'hidden', display: '-webkit-box',
+                  WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+                }}>
+                  {resource.description}
+                </p>
+              )}
+              {resource?.wiki_content && (
+                <p style={{
+                  margin: 0, color: '#64748b', fontSize: '0.75rem', lineHeight: '1.4',
+                  overflow: 'hidden', display: '-webkit-box',
+                  WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', fontStyle: 'italic',
+                }}>
+                  {resource.wiki_content}
+                </p>
+              )}
+            </>
           )}
         </div>
 
-        {/* Stats */}
-        {statsEntries.length > 0 && (
+        {/* Stats (solo para marcadores de recurso) */}
+        {!isPersonalNote && statsEntries.length > 0 && (
           <div style={{
             width: '160px', flexShrink: 0,
             borderLeft: '1px solid rgba(255,255,255,0.06)',
             padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '7px',
           }}>
-            <span style={{
-              color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
-              letterSpacing: '0.1em', fontWeight: '700',
-            }}>Stats</span>
+            <span style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>
+              Stats
+            </span>
             {statsEntries.map(([key, val]) => (
               <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: '#64748b', fontSize: '0.75rem', textTransform: 'capitalize' }}>{key}</span>
                 <span style={{ color: '#e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>{val}</span>
               </div>
             ))}
-            {/* Link a la wiki */}
-          <a
-            href={`/wiki/${resource?.type}`}
-            style={{
-              marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
-              gap: '4px', color: typeColor, fontSize: '0.75rem', fontWeight: '600',
-              textDecoration: 'none', opacity: 0.85, width: 'fit-content',
-            }}
-            onMouseEnter={e => e.currentTarget.style.opacity = 1}
-            onMouseLeave={e => e.currentTarget.style.opacity = 0.85}
-          >
-            Ver en la Wiki →
-          </a>
-          {isAdmin && (
+            <a
+              href={`/wiki/${resource?.type}`}
+              style={{
+                marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
+                gap: '4px', color: typeColor, fontSize: '0.75rem', fontWeight: '600',
+                textDecoration: 'none', opacity: 0.85, width: 'fit-content',
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = 1}
+              onMouseLeave={e => e.currentTarget.style.opacity = 0.85}
+            >
+              Ver en la Wiki →
+            </a>
+            {isAdmin && (
+              <button
+                onClick={async () => {
+                  if (!confirm('¿Seguro que quieres eliminar este marcador?')) return
+                  await api.delete(`/markers/${marker._id}`)
+                  onClose()
+                  window.location.reload()
+                }}
+                style={{
+                  marginTop: '8px',
+                  background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)',
+                  color: '#ef4444', padding: '4px 10px', borderRadius: '6px',
+                  cursor: 'pointer', fontSize: '0.7rem', fontWeight: '600',
+                  transition: 'all 0.2s', width: 'fit-content',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.12)'}
+              >
+                🗑 Eliminar
+              </button>
+            )}
             <button
               onClick={async () => {
-                if (!confirm('¿Seguro que quieres eliminar este POI?')) return
-                await api.delete(`/markers/${marker._id}`)
-                onClose()
-                window.location.reload()
-              }}
-              style={{
-                marginTop: '8px',
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.4)',
-                color: '#ef4444',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                width: 'fit-content',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'
+                if (!marker) return
+                setNoteLoading(true)
+                await api.put('/users/progress/note', { markerId: marker._id, personal_note: noteText })
+                setNoteLoading(false)
               }}
             >
-              🗑 Eliminar
+              {noteLoading ? 'Guardando...' : 'Guardar'}
             </button>
-          )}
+            <textarea value={noteText} onChange={e => setNoteText(e.target.value)} />
           </div>
         )}
 
-        {/* Notas del marcador */}
-        {marker?.notes && (
+        {/* Columna de notas del marcador (solo para marcadores de recurso con notes) */}
+        {!isPersonalNote && marker?.notes && (
           <div style={{
             width: '180px', flexShrink: 0,
             borderLeft: '1px solid rgba(255,255,255,0.06)',
             padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '6px',
           }}>
-            <span style={{
-              color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
-              letterSpacing: '0.1em', fontWeight: '700',
-            }}>Notas</span>
+            <span style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>
+              Notas
+            </span>
             <p style={{
               margin: 0, color: '#94a3b8', fontSize: '0.78rem', lineHeight: '1.5',
               overflow: 'hidden', display: '-webkit-box',
@@ -282,6 +282,33 @@ function ResourcePanel({ marker, onClose }) {
             }}>
               {marker.notes}
             </p>
+          </div>
+        )}
+
+        {/* Botón eliminar nota personal */}
+        {isPersonalNote && (
+          <div style={{
+            width: '120px', flexShrink: 0,
+            borderLeft: '1px solid rgba(255,255,255,0.06)',
+            padding: '14px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '8px',
+          }}>
+            <button
+              onClick={async () => {
+                if (!confirm('¿Eliminar esta nota?')) return
+                await api.delete(`/notes/${marker._id}`)
+                onClose()
+              }}
+              style={{
+                background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.4)',
+                color: '#ef4444', padding: '6px 10px', borderRadius: '6px',
+                cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(239,68,68,0.2)'}
+              onMouseLeave={e => e.currentTarget.style.background = 'rgba(239,68,68,0.12)'}
+            >
+              🗑 Eliminar nota
+            </button>
           </div>
         )}
 
@@ -295,14 +322,8 @@ function ResourcePanel({ marker, onClose }) {
             cursor: 'pointer', display: 'flex', alignItems: 'center',
             justifyContent: 'center', fontSize: '0.8rem', transition: 'all 0.2s',
           }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-            e.currentTarget.style.color = '#e2e8f0'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
-            e.currentTarget.style.color = '#64748b'
-          }}
+          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#e2e8f0' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = '#64748b' }}
         >✕</button>
       </div>
     </div>
@@ -319,24 +340,11 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
     }, {})
   )
 
-  const toggleType = (type) => {
-    setActiveTypes(prev => {
-      const next = new Set(prev)
-      next.has(type) ? next.delete(type) : next.add(type)
-      return next
-    })
-  }
+  const toggleType  = (type) => setActiveTypes(prev  => { const n = new Set(prev); n.has(type)  ? n.delete(type)  : n.add(type);  return n })
+  const toggleBiome = (id)   => setActiveBiomes(prev => { const n = new Set(prev); n.has(id)    ? n.delete(id)    : n.add(id);    return n })
 
-  const toggleBiome = (id) => {
-    setActiveBiomes(prev => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
-  }
-
-  const allTypesOn   = activeTypes.size === Object.keys(TYPE_LABELS).length
-  const allBiomesOn  = activeBiomes.size === uniqueBiomes.length
+  const allTypesOn  = activeTypes.size  === Object.keys(TYPE_LABELS).length
+  const allBiomesOn = activeBiomes.size === uniqueBiomes.length
   const anyFilterOff = !allTypesOn || !allBiomesOn
 
   const resetAll = () => {
@@ -346,13 +354,10 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
 
   return (
     <div style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 1000 }}>
-      {/* Botón toggle del panel */}
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          display:        'flex',
-          alignItems:     'center',
-          gap:            '6px',
+          display: 'flex', alignItems: 'center', gap: '6px',
           background:     anyFilterOff ? 'rgba(96,165,250,0.25)' : 'rgba(8,16,36,0.88)',
           border:         `1px solid ${anyFilterOff ? '#60a5fa' : 'rgba(96,165,250,0.3)'}`,
           borderRadius:   '8px',
@@ -378,40 +383,25 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
         )}
       </button>
 
-      {/* Panel desplegable */}
       {open && (
         <div style={{
-          position:       'absolute',
-          top:            '44px',
-          right:          0,
-          width:          '260px',
-          background:     'rgba(8,16,36,0.96)',
-          border:         '1px solid rgba(96,165,250,0.2)',
-          borderRadius:   '12px',
-          backdropFilter: 'blur(16px)',
-          boxShadow:      '0 8px 32px rgba(0,0,0,0.6)',
-          padding:        '16px',
-          display:        'flex',
-          flexDirection:  'column',
-          gap:            '14px',
+          position: 'absolute', top: '44px', right: 0, width: '260px',
+          background: 'rgba(8,16,36,0.96)', border: '1px solid rgba(96,165,250,0.2)',
+          borderRadius: '12px', backdropFilter: 'blur(16px)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          padding: '16px', display: 'flex', flexDirection: 'column', gap: '14px',
         }}>
-
-          {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: '#e2e8f0', fontWeight: '700', fontSize: '0.85rem', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
               Filtros del mapa
             </span>
             {anyFilterOff && (
-              <button onClick={resetAll} style={{
-                background: 'none', border: 'none', color: '#60a5fa',
-                fontSize: '0.72rem', cursor: 'pointer', fontWeight: '600',
-              }}>
+              <button onClick={resetAll} style={{ background: 'none', border: 'none', color: '#60a5fa', fontSize: '0.72rem', cursor: 'pointer', fontWeight: '600' }}>
                 Mostrar todo
               </button>
             )}
           </div>
 
-          {/* Filtro por tipo */}
           <div>
             <div style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700', marginBottom: '8px' }}>
               Tipo
@@ -428,12 +418,8 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
                       background:   active ? `${color}22` : 'rgba(255,255,255,0.04)',
                       border:       `1px solid ${active ? color + '88' : 'rgba(255,255,255,0.1)'}`,
                       color:        active ? color : '#475569',
-                      borderRadius: '20px',
-                      padding:      '4px 12px',
-                      cursor:       'pointer',
-                      fontSize:     '0.75rem',
-                      fontWeight:   '600',
-                      transition:   'all 0.15s',
+                      borderRadius: '20px', padding: '4px 12px',
+                      cursor: 'pointer', fontSize: '0.75rem', fontWeight: '600', transition: 'all 0.15s',
                     }}
                   >
                     {label}
@@ -443,20 +429,15 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
             </div>
           </div>
 
-          {/* Separador */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }} />
 
-          {/* Filtro por bioma */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
               <span style={{ color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: '700' }}>
                 Bioma
               </span>
               <button
-                onClick={() => {
-                  if (allBiomesOn) setActiveBiomes(new Set())
-                  else setActiveBiomes(new Set(uniqueBiomes.map(b => b._id)))
-                }}
+                onClick={() => allBiomesOn ? setActiveBiomes(new Set()) : setActiveBiomes(new Set(uniqueBiomes.map(b => b._id)))}
                 style={{ background: 'none', border: 'none', color: '#475569', fontSize: '0.7rem', cursor: 'pointer' }}
               >
                 {allBiomesOn ? 'Ninguno' : 'Todos'}
@@ -471,24 +452,17 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
                     key={biome._id}
                     onClick={() => toggleBiome(biome._id)}
                     style={{
-                      display:      'flex',
-                      alignItems:   'center',
-                      gap:          '8px',
+                      display: 'flex', alignItems: 'center', gap: '8px',
                       background:   active ? `${color}11` : 'transparent',
                       border:       `1px solid ${active ? color + '44' : 'transparent'}`,
-                      borderRadius: '6px',
-                      padding:      '5px 8px',
-                      cursor:       'pointer',
-                      textAlign:    'left',
-                      transition:   'all 0.15s',
-                      width:        '100%',
+                      borderRadius: '6px', padding: '5px 8px',
+                      cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s', width: '100%',
                     }}
                   >
                     <span style={{
                       width: '10px', height: '10px', borderRadius: '50%', flexShrink: 0,
                       background: active ? color : '#1e293b',
-                      border: `2px solid ${color}`,
-                      transition: 'all 0.15s',
+                      border: `2px solid ${color}`, transition: 'all 0.15s',
                     }} />
                     <span style={{ color: active ? '#e2e8f0' : '#475569', fontSize: '0.78rem', fontWeight: '500' }}>
                       {biome.name}
@@ -499,7 +473,6 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
             </div>
           </div>
 
-          {/* Contador */}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '10px', color: '#475569', fontSize: '0.72rem', textAlign: 'center' }}>
             Mostrando marcadores de {activeTypes.size} tipo{activeTypes.size !== 1 ? 's' : ''} · {activeBiomes.size} bioma{activeBiomes.size !== 1 ? 's' : ''}
           </div>
@@ -510,25 +483,25 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
 }
 
 export default function MapPage() {
-  const [markers, setMarkers] = useState([])
-  const [activeTypes, setActiveTypes] = useState(new Set(Object.keys(TYPE_LABELS)))
+  const [markers, setMarkers]           = useState([])
+  const [personalNotes, setPersonalNotes] = useState([])
+  const [activeTypes, setActiveTypes]   = useState(new Set(Object.keys(TYPE_LABELS)))
   const [activeBiomes, setActiveBiomes] = useState(null)
   const [isAlternativeVideo, setIsAlternativeVideo] = useState(false)
-  const [isTransitioning, setIsTransitioning] = useState(false)
-  const [showButton, setShowButton] = useState(true)
+  const [isTransitioning, setIsTransitioning]       = useState(false)
+  const [showButton, setShowButton]     = useState(true)
   const [hoveredBiome, setHoveredBiome] = useState(null)
   const [selectedMarker, setSelectedMarker] = useState(null)
   const [showUploadTool, setShowUploadTool] = useState(false)
-  const [showNotesTool, setShowNotesTool] = useState(false)
-  
-  const mapRef = useRef(null)
-  
+  const [noteText, setNoteText]         = useState('')
+  const [noteLoading, setNoteLoading]   = useState(false)
+
+  const mapRef   = useRef(null)
   const videoRef = useRef(null)
 
-  const user = JSON.parse(localStorage.getItem('user'))
-  const isPremiumOrAbove =
-    user?.role === 'premium' || user?.role === 'admin'
-
+  const user             = JSON.parse(localStorage.getItem('user'))
+  const isPremiumOrAbove = user?.role === 'premium' || user?.role === 'admin'
+  const showNotesOnMap   = activeTypes.has('notas')
 
   useEffect(() => {
     api.get('/markers')
@@ -540,10 +513,19 @@ export default function MapPage() {
       .catch(err => console.error(err))
   }, [])
 
-  const filteredMarkers = markers.filter(m =>
-    activeTypes.has(m.resource_id?.type) &&
-    (activeBiomes === null || activeBiomes.has(m.biome_id?._id))
-  )
+  useEffect(() => {
+    if (!isPremiumOrAbove) return
+    api.get('/notes')
+      .then(res => setPersonalNotes(res.data))
+      .catch(err => console.error(err))
+  }, [])
+
+  useEffect(() => {
+    if (!selectedMarker || selectedMarker.isPersonalNote) return
+    api.get(`/users/progress/${selectedMarker._id}`)
+      .then(res => setNoteText(res.data?.personal_note || ''))
+      .catch(console.error)
+  }, [selectedMarker])
 
   useEffect(() => {
     if (videoRef.current) {
@@ -551,6 +533,11 @@ export default function MapPage() {
       videoRef.current.play()
     }
   }, [isAlternativeVideo])
+
+  const filteredMarkers = markers.filter(m =>
+    activeTypes.has(m.resource_id?.type) &&
+    (activeBiomes === null || activeBiomes.has(m.biome_id?._id))
+  )
 
   const handleVideoChange = () => {
     setShowButton(false)
@@ -566,20 +553,23 @@ export default function MapPage() {
       setIsTransitioning(true)
       setTimeout(() => {
         setIsAlternativeVideo(false)
-        setTimeout(() => {
-          setIsTransitioning(false)
-          setShowButton(true)
-        }, 500)
+        setTimeout(() => { setIsTransitioning(false); setShowButton(true) }, 500)
       }, 500)
     }
   }
 
   const handleMarkerCreated = () => {
-    api.get('/markers')
-      .then(res => {
-        setMarkers(res.data)
-      })
-      .catch(err => console.error(err))
+    api.get('/markers').then(res => setMarkers(res.data)).catch(console.error)
+    if (isPremiumOrAbove) {
+      api.get('/notes').then(res => setPersonalNotes(res.data)).catch(console.error)
+    }
+  }
+
+  const handleClosePanel = () => {
+    setSelectedMarker(null)
+    if (isPremiumOrAbove) {
+      api.get('/notes').then(res => setPersonalNotes(res.data)).catch(console.error)
+    }
   }
 
   return (
@@ -621,8 +611,8 @@ export default function MapPage() {
             bottom:         '30px',
             right:          '30px',
             zIndex:         100,
-            background:     'rgba(96, 165, 250, 0.2)',
-            border:         '2px solid rgba(96, 165, 250, 0.5)',
+            background:     'rgba(96,165,250,0.2)',
+            border:         '2px solid rgba(96,165,250,0.5)',
             color:          '#60a5fa',
             padding:        '12px 24px',
             borderRadius:   '8px',
@@ -633,14 +623,8 @@ export default function MapPage() {
             backdropFilter: 'blur(8px)',
             animation:      'fadeIn 0.3s ease-in-out',
           }}
-          onMouseEnter={e => {
-            e.target.style.background  = 'rgba(96, 165, 250, 0.3)'
-            e.target.style.borderColor = '#60a5fa'
-          }}
-          onMouseLeave={e => {
-            e.target.style.background  = 'rgba(96, 165, 250, 0.2)'
-            e.target.style.borderColor = 'rgba(96, 165, 250, 0.5)'
-          }}
+          onMouseEnter={e => { e.target.style.background = 'rgba(96,165,250,0.3)'; e.target.style.borderColor = '#60a5fa' }}
+          onMouseLeave={e => { e.target.style.background = 'rgba(96,165,250,0.2)'; e.target.style.borderColor = 'rgba(96,165,250,0.5)' }}
         >
           Atacar Criatura
         </button>
@@ -648,14 +632,14 @@ export default function MapPage() {
 
       {/* MAPA */}
       <div style={{
-        height:   '90vh',
-        width:    '100%',
-        marginTop:'80px',
-        padding:  '30px',
-        position: 'relative',
-        zIndex:   10,
-        boxSizing:'border-box',
-        overflow: 'visible',
+        height:    '90vh',
+        width:     '100%',
+        marginTop: '80px',
+        padding:   '30px',
+        position:  'relative',
+        zIndex:    10,
+        boxSizing: 'border-box',
+        overflow:  'visible',
       }}>
         <MapContainer
           ref={mapRef}
@@ -667,8 +651,8 @@ export default function MapPage() {
             width:        '100%',
             background:   '#0a1628',
             borderRadius: '12px',
-            boxShadow:    '0 8px 32px rgba(0, 0, 0, 0.6)',
-            border:       '2px solid rgba(96, 165, 250, 0.2)',
+            boxShadow:    '0 8px 32px rgba(0,0,0,0.6)',
+            border:       '2px solid rgba(96,165,250,0.2)',
           }}
           maxZoom={2}
           minZoom={-3}
@@ -677,7 +661,6 @@ export default function MapPage() {
         >
           <ZoomControl position="topleft" />
 
-          {/* Cierra el panel al hacer click en el mapa */}
           <MapClickHandler onMapClick={() => setSelectedMarker(null)} />
 
           <SVGOverlay bounds={SVG_BOUNDS} className="biome-svg-overlay">
@@ -696,33 +679,33 @@ export default function MapPage() {
             </svg>
           </SVGOverlay>
 
-          {/* Botón para mostrar/ocultar herramienta de carga */}
+          {/* Botón herramienta de carga */}
           {isPremiumOrAbove && (
             <button
               onClick={() => setShowUploadTool(!showUploadTool)}
               style={{
-                position: 'absolute',
-                top: '46px',       
-                left: '60px',
-                zIndex: 500,
-                background: 'rgba(0, 212, 255, 0.2)',
-                border: '2px solid #00d4ff',
-                color: '#00d4ff',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: '600',
+                position:       'absolute',
+                top:            '46px',
+                left:           '60px',
+                zIndex:         500,
+                background:     'rgba(0,212,255,0.2)',
+                border:         '2px solid #00d4ff',
+                color:          '#00d4ff',
+                padding:        '10px 20px',
+                borderRadius:   '8px',
+                cursor:         'pointer',
+                fontWeight:     '600',
                 backdropFilter: 'blur(8px)',
-                transition: 'all 0.3s ease',
+                transition:     'all 0.3s ease',
               }}
-              onMouseEnter={e => e.target.style.background = 'rgba(0, 212, 255, 0.3)'}
-              onMouseLeave={e => e.target.style.background = 'rgba(0, 212, 255, 0.2)'}
+              onMouseEnter={e => e.target.style.background = 'rgba(0,212,255,0.3)'}
+              onMouseLeave={e => e.target.style.background = 'rgba(0,212,255,0.2)'}
             >
               📍 {showUploadTool ? 'Cerrar' : 'Cargar Datos'}
             </button>
           )}
 
-          {/* Marcadores */}
+          {/* Marcadores de recursos */}
           {filteredMarkers.map(marker => (
             <Marker
               key={marker._id}
@@ -736,8 +719,24 @@ export default function MapPage() {
               }}
             />
           ))}
+
+          {/* Notas personales */}
+          {isPremiumOrAbove && showNotesOnMap && personalNotes.map(note => (
+            <Marker
+              key={note._id}
+              position={[note.y, note.x]}
+              icon={markerIcons.notas || markerIcons.default}
+              eventHandlers={{
+                click: (e) => {
+                  L.DomEvent.stopPropagation(e)
+                  setSelectedMarker({ ...note, isPersonalNote: true })
+                },
+              }}
+            />
+          ))}
         </MapContainer>
 
+        {/* Herramienta drag & drop */}
         {showUploadTool && (
           <DragDropResourceTool
             mapRef={mapRef}
@@ -745,7 +744,6 @@ export default function MapPage() {
             onMarkerCreated={handleMarkerCreated}
           />
         )}
-
 
         {/* Panel de filtros */}
         {activeBiomes !== null && (
@@ -761,7 +759,11 @@ export default function MapPage() {
         {/* Panel inferior del marcador seleccionado */}
         <ResourcePanel
           marker={selectedMarker}
-          onClose={() => setSelectedMarker(null)}
+          onClose={handleClosePanel}
+          noteText={noteText}
+          setNoteText={setNoteText}
+          noteLoading={noteLoading}
+          setNoteLoading={setNoteLoading}
         />
 
         {/* Tooltip del bioma hovereado */}
@@ -771,7 +773,7 @@ export default function MapPage() {
             bottom:         '50px',
             left:           '50%',
             transform:      'translateX(-50%)',
-            background:     'rgba(10, 22, 40, 0.92)',
+            background:     'rgba(10,22,40,0.92)',
             border:         `2px solid ${BIOME_COLORS[hoveredBiome] || '#60a5fa'}`,
             borderRadius:   '8px',
             padding:        '8px 24px',
@@ -789,13 +791,12 @@ export default function MapPage() {
             {BIOME_NAMES[hoveredBiome] || hoveredBiome}
           </div>
         )}
-
       </div>
 
       {/* SECCIÓN SCROLL */}
       <div style={{
         minHeight:  '100vh',
-        background: 'rgba(10, 22, 40, 0.8)',
+        background: 'rgba(10,22,40,0.8)',
         padding:    '4rem 2rem',
         color:      '#fff',
         position:   'relative',

@@ -154,14 +154,14 @@ export const assignRole = async (req, res) => {
 export const updateNote = async (req, res) => {
   try {
     const userId = req.user.id
-    const { marker_id, personal_note } = req.body
+    const { markerId, personal_note } = req.body
 
     if (req.user.role !== 'premium' && req.user.role !== 'admin') {
       return res.status(403).json({ error: 'No autorizado' })
     }
 
     const updated = await UserProgress.findOneAndUpdate(
-      { user_id: userId, marker_id },
+      { user_id: userId, marker_id: markerId },
       {
         personal_note,
         updated_at: new Date()

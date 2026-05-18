@@ -3,40 +3,48 @@ import api from '../services/api'
 import L from 'leaflet'
 import { markerIcons } from '../utils/markerIcons'
 
-const MARKER_TYPES = {
-  fauna:     { label: 'Fauna',    icon: markerIcons.fauna?.options?.html, color: '#ff6b6b', desc: 'Criaturas marinas' },
-  flora:     { label: 'Flora',    icon: markerIcons.flora?.options?.html, color: '#4ade80', desc: 'Plantas y algas'   },
-  material:  { label: 'Material', icon: markerIcons.material?.options?.html, color: '#fbbf24', desc: 'Recursos y minerales' },
-  poi:       { label: 'PDI',      icon: markerIcons.poi?.options?.html, color: '#a78bfa', desc: 'Puntos de interés' },
-  leviathan: { label: 'Leviatán', icon: markerIcons.leviathan?.options?.html, color: '#fb7185', desc: 'Leviatanes'        },
+const ALL_MARKER_TYPES = {
+  fauna:     { label: 'Fauna',    icon: markerIcons.fauna?.options?.html,     color: '#ff6b6b', desc: 'Criaturas marinas',      adminOnly: true  },
+  flora:     { label: 'Flora',    icon: markerIcons.flora?.options?.html,     color: '#4ade80', desc: 'Plantas y algas',         adminOnly: true  },
+  material:  { label: 'Material', icon: markerIcons.material?.options?.html,  color: '#fbbf24', desc: 'Recursos y minerales',   adminOnly: true  },
+  poi:       { label: 'PDI',      icon: markerIcons.poi?.options?.html,       color: '#a78bfa', desc: 'Puntos de interés',       adminOnly: true  },
+  leviathan: { label: 'Leviatán', icon: markerIcons.leviathan?.options?.html, color: '#fb7185', desc: 'Leviatanes',             adminOnly: true  },
+  notas:     { label: 'Nota',     icon: '📝',                                 color: '#38bdf8', desc: 'Nota personal del mapa', adminOnly: false },
 }
 
 export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
-  const [biomes, setBiomes]                   = useState([])
-  const [resources, setResources]             = useState([])
-  const [loadingRes, setLoadingRes]           = useState(false)
-  const [draggedType, setDraggedType]         = useState(null)
-  const [dropState, setDropState]             = useState(null)   
-  const [search, setSearch]                   = useState('')
+  const user = JSON.parse(localStorage.getItem('user'))
+  const isAdmin = user?.role === 'admin'
+
+  const MARKER_TYPES = Object.fromEntries(
+    Object.entries(ALL_MARKER_TYPES).filter(([, info]) => isAdmin || !info.adminOnly)
+  )
+
+  const [biomes, setBiomes]                     = useState([])
+  const [resources, setResources]               = useState([])
+  const [loadingRes, setLoadingRes]             = useState(false)
+  const [draggedType, setDraggedType]           = useState(null)
+  const [dropState, setDropState]               = useState(null)
+  const [search, setSearch]                     = useState('')
   const [selectedResource, setSelectedResource] = useState(null)
-  const [selectedBiome, setSelectedBiome]     = useState('')
-  const [notes, setNotes]                     = useState('')
-  const [loading, setLoading]                 = useState(false)
-  const [message, setMessage]                 = useState({ text: '', type: '' })
+  const [selectedBiome, setSelectedBiome]       = useState('')
+  const [notes, setNotes]                       = useState('')
+  const [loading, setLoading]                   = useState(false)
+  const [message, setMessage]                   = useState({ text: '', type: '' })
   const tempMarkerRef = useRef(null)
   const searchRef     = useRef(null)
+
+  const isNoteType = dropState?.type === 'notas'
 
   useEffect(() => {
     api.get('/biomes').then(r => setBiomes(r.data)).catch(console.error)
   }, [])
 
   useEffect(() => {
-    if (!dropState) return
+    if (!dropState || isNoteType) return
     setLoadingRes(true)
     api.get('/resources')
-      .then(r => {
-        setResources(r.data.filter(res => res.type === dropState.type))
-      })
+      .then(r => setResources(r.data.filter(res => res.type === dropState.type)))
       .catch(console.error)
       .finally(() => setLoadingRes(false))
     setTimeout(() => searchRef.current?.focus(), 100)
@@ -53,30 +61,24 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
       e.dataTransfer.dropEffect = 'copy'
       container.style.cursor = 'crosshair'
     }
-
-    const onDragLeave = () => {
-      container.style.cursor = ''
-    }
-
+    const onDragLeave = () => { container.style.cursor = '' }
     const onDrop = (e) => {
       e.preventDefault()
       container.style.cursor = ''
       if (!draggedType) return
 
-      const rect  = container.getBoundingClientRect()
-      const point = L.point(e.clientX - rect.left, e.clientY - rect.top)
+      const rect   = container.getBoundingClientRect()
+      const point  = L.point(e.clientX - rect.left, e.clientY - rect.top)
       const latlng = map.containerPointToLatLng(point)
 
       if (tempMarkerRef.current) tempMarkerRef.current.remove()
       const icon = markerIcons[draggedType] || markerIcons.default
-      tempMarkerRef.current = L.marker([latlng.lat, latlng.lng], { icon, opacity: 0.6 })
-        .addTo(map)
+      tempMarkerRef.current = L.marker([latlng.lat, latlng.lng], { icon, opacity: 0.6 }).addTo(map)
 
       setDropState({ coords: { lat: latlng.lat, lng: latlng.lng }, type: draggedType })
       setDraggedType(null)
       setSelectedResource(null)
       setSelectedBiome('')
-      setSearch('')
       setNotes('')
       setMessage({ text: '', type: '' })
     }
@@ -98,28 +100,46 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
   }
 
   const handleSubmit = async () => {
-    if (!selectedResource) return setMessage({ text: '⚠️ Selecciona un recurso', type: 'warn' })
-    if (!selectedBiome)    return setMessage({ text: '⚠️ Selecciona un bioma',   type: 'warn' })
-
-    setLoading(true)
-    try {
-      await api.post('/markers', {
-        resource_id: selectedResource._id,
-        biome_id:    selectedBiome,
-        x:           dropState.coords.lng,
-        y:           dropState.coords.lat,
-        notes,
-      })
-
-      if (tempMarkerRef.current) { tempMarkerRef.current.remove(); tempMarkerRef.current = null }
-      setMessage({ text: ' Marcador creado correctamente', type: 'ok' })
-      onMarkerCreated?.()
-
-      setTimeout(() => { setDropState(null); setMessage({ text: '', type: '' }) }, 1500)
-    } catch (err) {
-      setMessage({ text: ` ${err.response?.data?.error || err.message}`, type: 'err' })
-    } finally {
-      setLoading(false)
+    if (isNoteType) {
+      if (!notes.trim()) return setMessage({ text: ' Escribe algo en la nota', type: 'warn' })
+      setLoading(true)
+      try {
+        await api.post('/notes', {
+          x:        dropState.coords.lng,
+          y:        dropState.coords.lat,
+          biome_id: selectedBiome || undefined,
+          note:     notes,
+        })
+        if (tempMarkerRef.current) { tempMarkerRef.current.remove(); tempMarkerRef.current = null }
+        setMessage({ text: ' Nota creada correctamente', type: 'ok' })
+        onMarkerCreated?.()
+        setTimeout(() => { setDropState(null); setMessage({ text: '', type: '' }) }, 1500)
+      } catch (err) {
+        setMessage({ text: ` ${err.response?.data?.error || err.message}`, type: 'err' })
+      } finally {
+        setLoading(false)
+      }
+    } else {
+      if (!selectedResource) return setMessage({ text: '⚠️ Selecciona un recurso', type: 'warn' })
+      if (!selectedBiome)    return setMessage({ text: '⚠️ Selecciona un bioma',   type: 'warn' })
+      setLoading(true)
+      try {
+        await api.post('/markers', {
+          resource_id: selectedResource._id,
+          biome_id:    selectedBiome,
+          x:           dropState.coords.lng,
+          y:           dropState.coords.lat,
+          notes,
+        })
+        if (tempMarkerRef.current) { tempMarkerRef.current.remove(); tempMarkerRef.current = null }
+        setMessage({ text: '✅ Marcador creado correctamente', type: 'ok' })
+        onMarkerCreated?.()
+        setTimeout(() => { setDropState(null); setMessage({ text: '', type: '' }) }, 1500)
+      } catch (err) {
+        setMessage({ text: `❌ ${err.response?.data?.error || err.message}`, type: 'err' })
+      } finally {
+        setLoading(false)
+      }
     }
   }
 
@@ -129,21 +149,22 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
 
   const typeInfo = dropState ? MARKER_TYPES[dropState.type] : null
 
+  if (!isAdmin && user?.role !== 'premium') return null
+
   return (
     <>
-      {/* Panel lateral  */}
       <div style={styles.panel}>
-        {/* Header */}
         <div style={styles.panelHeader}>
           <span style={styles.panelTitle}>📍 Añadir Marcador</span>
           <button onClick={onClose} style={styles.closeBtn} title="Cerrar">✕</button>
         </div>
 
         <p style={styles.panelHint}>
-          Arrastra un tipo al punto del mapa donde quieres colocarlo
+          {isAdmin
+            ? 'Arrastra un tipo al punto del mapa donde quieres colocarlo'
+            : 'Arrastra una nota al punto del mapa que quieres marcar'}
         </p>
 
-        {/* Cards */}
         <div style={styles.typeGrid}>
           {Object.entries(MARKER_TYPES).map(([type, info]) => (
             <div
@@ -158,146 +179,177 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
                 transform:   draggedType === type ? 'scale(0.96)' : 'scale(1)',
               }}
             >
-              <span
-                style={{ fontSize: '1.8rem', lineHeight: 1 }}
-                dangerouslySetInnerHTML={{ __html: info.icon }}
-              />
+              {type === 'notas' ? (
+                <span style={{ fontSize: '1.8rem', lineHeight: 1 }}>{info.icon}</span>
+              ) : (
+                <span
+                  style={{ fontSize: '1.8rem', lineHeight: 1 }}
+                  dangerouslySetInnerHTML={{ __html: info.icon }}
+                />
+              )}
               <span style={{ ...styles.typeLabel, color: info.color }}>{info.label}</span>
               <span style={styles.typeDesc}>{info.desc}</span>
             </div>
           ))}
         </div>
 
-        {/* Indicador  */}
         {draggedType && (
-          <div style={{ ...styles.dragIndicator, borderColor: MARKER_TYPES[draggedType].color, color: MARKER_TYPES[draggedType].color }}>
+          <div style={{
+            ...styles.dragIndicator,
+            borderColor: MARKER_TYPES[draggedType].color,
+            color: MARKER_TYPES[draggedType].color
+          }}>
             Suelta en el mapa para colocar
           </div>
         )}
       </div>
 
-      {/* Modal de selección */}
       {dropState && (
         <div style={styles.overlay} onClick={e => e.target === e.currentTarget && cancelDrop()}>
           <div style={{ ...styles.modal, '--accent': typeInfo?.color || '#00d4ff' }}>
 
-            {/* Header del modal */}
             <div style={styles.modalHeader}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={styles.modalTitle}>Seleccionar recurso</span>
-              </div>
+              <span style={styles.modalTitle}>
+                {isNoteType ? '📝 Nueva nota personal' : 'Seleccionar recurso'}
+              </span>
               <button onClick={cancelDrop} style={styles.closeBtn}>✕</button>
             </div>
 
-            {/* Coords */}
             <div style={styles.coordsBadge}>
-               x: {dropState.coords.lng.toFixed(1)} · y: {dropState.coords.lat.toFixed(1)}
+              x: {dropState.coords.lng.toFixed(1)} · y: {dropState.coords.lat.toFixed(1)}
             </div>
 
-            {/* Búsqueda de recurso */}
-            <div style={styles.section}>
-              <label style={styles.label}>Recurso *</label>
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder={`Buscar ${typeInfo?.label.toLowerCase()}...`}
-                value={search}
-                onChange={e => { setSearch(e.target.value); setSelectedResource(null) }}
-                style={styles.searchInput}
-              />
+            {/* Modal simplificado para notas */}
+            {isNoteType ? (
+              <>
+                <div style={styles.section}>
+                  <label style={styles.label}>Nota *</label>
+                  <textarea
+                    autoFocus
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    placeholder="Escribe aquí tu nota personal para este punto…"
+                    rows={4}
+                    style={styles.textarea}
+                  />
+                </div>
 
-              {/* Lista de recursos */}
-              <div style={styles.resourceList}>
-                {loadingRes ? (
-                  <div style={styles.listPlaceholder}>Cargando recursos…</div>
-                ) : filteredResources.length === 0 ? (
-                  <div style={styles.listPlaceholder}>
-                    {search ? `Sin resultados para "${search}"` : `No hay ${typeInfo?.label.toLowerCase()} en la BD`}
-                  </div>
-                ) : (
-                  filteredResources.map(r => (
-                    <button
-                      key={r._id}
-                      onClick={() => setSelectedResource(r)}
-                      style={{
-                        ...styles.resourceItem,
-                        background:   selectedResource?._id === r._id ? `${typeInfo?.color}22` : 'rgba(255,255,255,0.03)',
-                        borderColor:  selectedResource?._id === r._id ? `${typeInfo?.color}88` : 'rgba(255,255,255,0.07)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
-                        <span style={{ color: selectedResource?._id === r._id ? typeInfo?.color : '#e2e8f0', fontWeight: '600', fontSize: '0.85rem' }}>
-                          {r.name}
-                        </span>
-                        {r.description && (
-                          <span style={{ color: '#64748b', fontSize: '0.72rem', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '340px' }}>
-                            {r.description}
-                          </span>
-                        )}
+                <div style={styles.section}>
+                  <label style={styles.label}>Bioma <span style={{ color: '#475569', fontWeight: 400 }}>(opcional)</span></label>
+                  <select
+                    value={selectedBiome}
+                    onChange={e => setSelectedBiome(e.target.value)}
+                    style={styles.select}
+                  >
+                    <option value="">— Selecciona un bioma —</option>
+                    {biomes.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
+                  </select>
+                </div>
+              </>
+            ) : (
+              /* Modal completo para recursos */
+              <>
+                <div style={styles.section}>
+                  <label style={styles.label}>Recurso *</label>
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    placeholder={`Buscar ${typeInfo?.label.toLowerCase()}...`}
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setSelectedResource(null) }}
+                    style={styles.searchInput}
+                  />
+                  <div style={styles.resourceList}>
+                    {loadingRes ? (
+                      <div style={styles.listPlaceholder}>Cargando recursos…</div>
+                    ) : filteredResources.length === 0 ? (
+                      <div style={styles.listPlaceholder}>
+                        {search ? `Sin resultados para "${search}"` : `No hay ${typeInfo?.label.toLowerCase()} en la BD`}
                       </div>
-                      {selectedResource?._id === r._id && (
-                        <span style={{ color: typeInfo?.color, fontSize: '1rem', flexShrink: 0 }}>✓</span>
-                      )}
-                    </button>
-                  ))
-                )}
-              </div>
-            </div>
+                    ) : (
+                      filteredResources.map(r => (
+                        <button
+                          key={r._id}
+                          onClick={() => setSelectedResource(r)}
+                          style={{
+                            ...styles.resourceItem,
+                            background:  selectedResource?._id === r._id ? `${typeInfo?.color}22` : 'rgba(255,255,255,0.03)',
+                            borderColor: selectedResource?._id === r._id ? `${typeInfo?.color}88` : 'rgba(255,255,255,0.07)',
+                          }}
+                        >
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', textAlign: 'left' }}>
+                            <span style={{ color: selectedResource?._id === r._id ? typeInfo?.color : '#e2e8f0', fontWeight: '600', fontSize: '0.85rem' }}>
+                              {r.name}
+                            </span>
+                            {r.description && (
+                              <span style={{ color: '#64748b', fontSize: '0.72rem', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '340px' }}>
+                                {r.description}
+                              </span>
+                            )}
+                          </div>
+                          {selectedResource?._id === r._id && (
+                            <span style={{ color: typeInfo?.color, fontSize: '1rem', flexShrink: 0 }}>✓</span>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
 
-            {/* Bioma */}
-            <div style={styles.section}>
-              <label style={styles.label}>Bioma *</label>
-              <select
-                value={selectedBiome}
-                onChange={e => setSelectedBiome(e.target.value)}
-                style={styles.select}
-              >
-                <option value="">— Selecciona un bioma —</option>
-                {biomes.map(b => (
-                  <option key={b._id} value={b._id}>{b.name}</option>
-                ))}
-              </select>
-            </div>
+                <div style={styles.section}>
+                  <label style={styles.label}>Bioma *</label>
+                  <select
+                    value={selectedBiome}
+                    onChange={e => setSelectedBiome(e.target.value)}
+                    style={styles.select}
+                  >
+                    <option value="">— Selecciona un bioma —</option>
+                    {biomes.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
+                  </select>
+                </div>
 
-            {/* Notas opcionales */}
-            <div style={styles.section}>
-              <label style={styles.label}>Notas <span style={{ color: '#475569', fontWeight: 400 }}>(opcional)</span></label>
-              <textarea
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-                placeholder="Profundidad, comportamiento especial, rareza…"
-                rows={2}
-                style={styles.textarea}
-              />
-            </div>
+                <div style={styles.section}>
+                  <label style={styles.label}>Notas <span style={{ color: '#475569', fontWeight: 400 }}>(opcional)</span></label>
+                  <textarea
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    placeholder="Profundidad, comportamiento especial, rareza…"
+                    rows={2}
+                    style={styles.textarea}
+                  />
+                </div>
+              </>
+            )}
 
-            {/* Mensaje final */}
             {message.text && (
               <div style={{
                 ...styles.messageBanner,
-                background:   message.type === 'ok'   ? 'rgba(74,222,128,0.12)' : message.type === 'warn' ? 'rgba(251,191,36,0.12)' : 'rgba(248,113,113,0.12)',
-                borderColor:  message.type === 'ok'   ? '#4ade8066'             : message.type === 'warn' ? '#fbbf2466'             : '#f8717166',
-                color:        message.type === 'ok'   ? '#4ade80'               : message.type === 'warn' ? '#fbbf24'               : '#f87171',
+                background:  message.type === 'ok' ? 'rgba(74,222,128,0.12)' : message.type === 'warn' ? 'rgba(251,191,36,0.12)' : 'rgba(248,113,113,0.12)',
+                borderColor: message.type === 'ok' ? '#4ade8066'             : message.type === 'warn' ? '#fbbf2466'             : '#f8717166',
+                color:       message.type === 'ok' ? '#4ade80'               : message.type === 'warn' ? '#fbbf24'               : '#f87171',
               }}>
                 {message.text}
               </div>
             )}
 
-            {/* Botones */}
             <div style={styles.modalFooter}>
               <button onClick={cancelDrop} style={styles.btnCancel}>Cancelar</button>
               <button
                 onClick={handleSubmit}
-                disabled={loading || !selectedResource || !selectedBiome}
+                disabled={loading || (!isNoteType && (!selectedResource || !selectedBiome)) || (isNoteType && !notes.trim())}
                 style={{
                   ...styles.btnConfirm,
-                  background:    (!selectedResource || !selectedBiome) ? 'rgba(255,255,255,0.07)' : `${typeInfo?.color}`,
-                  color:         (!selectedResource || !selectedBiome) ? '#475569' : '#000',
-                  cursor:        (!selectedResource || !selectedBiome) ? 'not-allowed' : 'pointer',
-                  boxShadow:     (!selectedResource || !selectedBiome) ? 'none' : `0 4px 20px ${typeInfo?.color}55`,
+                  background: (loading || (!isNoteType && (!selectedResource || !selectedBiome)) || (isNoteType && !notes.trim()))
+                    ? 'rgba(255,255,255,0.07)' : typeInfo?.color,
+                  color:  (loading || (!isNoteType && (!selectedResource || !selectedBiome)) || (isNoteType && !notes.trim()))
+                    ? '#475569' : '#000',
+                  cursor: (loading || (!isNoteType && (!selectedResource || !selectedBiome)) || (isNoteType && !notes.trim()))
+                    ? 'not-allowed' : 'pointer',
+                  boxShadow: (loading || (!isNoteType && (!selectedResource || !selectedBiome)) || (isNoteType && !notes.trim()))
+                    ? 'none' : `0 4px 20px ${typeInfo?.color}55`,
                 }}
               >
-                {loading ? ' Guardando…' : ' Colocar marcador'}
+                {loading ? '⏳ Guardando…' : isNoteType ? '📝 Guardar nota' : '📍 Colocar marcador'}
               </button>
             </div>
           </div>
@@ -306,6 +358,7 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
     </>
   )
 }
+
 
 const styles = {
   panel: {

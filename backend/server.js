@@ -7,6 +7,8 @@ import userRoutes from './src/routes/userRoutes.js'
 import resourceRoutes from './src/routes/resourceRoutes.js'
 import biomeRoutes from './src/routes/biomeRoutes.js'
 import markerRoutes from './src/routes/markerRoutes.js'
+import personalNoteRoutes from './src/routes/personalNoteRoutes.js'
+
 
 dotenv.config()
 
@@ -24,6 +26,7 @@ app.use('/api/users', userRoutes)
 app.use('/api/resources', resourceRoutes)
 app.use('/api/biomes', biomeRoutes)
 app.use('/api/markers', markerRoutes)
+app.use('/api/notes', personalNoteRoutes)
 
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`))
