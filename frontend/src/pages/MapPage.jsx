@@ -8,55 +8,55 @@ import { SubnauticaMapPaths } from '../components/SubnauticaMapSVG'
 import { DragDropResourceTool } from '../components/DragDropResourceTool'
 
 const BIOME_COLORS = {
-  aguas_seguras:             '#00d4ff',
-  bosque_de_algas:           '#2d8a4e',
-  mesetas_herbosas:          '#6abf69',
-  bosque_de_setas:           '#e8a0c8',
+  aguas_seguras: '#00d4ff',
+  bosque_de_algas: '#2d8a4e',
+  mesetas_herbosas: '#6abf69',
+  bosque_de_setas: '#e8a0c8',
   zona_de_algas_sangrientas: '#cc0000',
-  gran_arrecife:             '#1a6fa8',
-  islas_submarinas:          '#48c9b0',
-  zona_de_bulbos:            '#f39c12',
-  campo_de_riscos:           '#7f8c8d',
-  dunas:                     '#d4ac0d',
-  montanas:                  '#5d6d7e',
-  arrecife_disperso:         '#5dade2',
-  sendero_de_caminantes:     '#a569bd',
-  aurora:                    '#e74c3c',
-  zona_de_aterrizaje:        '#e67e22',
+  gran_arrecife: '#1a6fa8',
+  islas_submarinas: '#48c9b0',
+  zona_de_bulbos: '#f39c12',
+  campo_de_riscos: '#7f8c8d',
+  dunas: '#d4ac0d',
+  montanas: '#5d6d7e',
+  arrecife_disperso: '#5dade2',
+  sendero_de_caminantes: '#a569bd',
+  aurora: '#e74c3c',
+  zona_de_aterrizaje: '#e67e22',
 }
 
 const BIOME_NAMES = {
-  aguas_seguras:             'Aguas Seguras',
-  bosque_de_algas:           'Bosque de Algas',
-  mesetas_herbosas:          'Mesetas Herbosas',
-  bosque_de_setas:           'Bosque de Setas',
+  aguas_seguras: 'Aguas Seguras',
+  bosque_de_algas: 'Bosque de Algas',
+  mesetas_herbosas: 'Mesetas Herbosas',
+  bosque_de_setas: 'Bosque de Setas',
   zona_de_algas_sangrientas: 'Zona de Algas Sangrientas',
-  gran_arrecife:             'Gran Arrecife',
-  islas_submarinas:          'Islas Submarinas',
-  zona_de_bulbos:            'Zona de Bulbos',
-  campo_de_riscos:           'Campo de Riscos',
-  dunas:                     'Dunas',
-  montanas:                  'Montañas',
-  arrecife_disperso:         'Arrecife Disperso',
-  sendero_de_caminantes:     'Sendero de Caminantes',
-  aurora:                    'Aurora (Zona de Impacto)',
-  zona_de_aterrizaje:        'Zona de Aterrizaje',
+  gran_arrecife: 'Gran Arrecife',
+  islas_submarinas: 'Islas Submarinas',
+  zona_de_bulbos: 'Zona de Bulbos',
+  campo_de_riscos: 'Campo de Riscos',
+  dunas: 'Dunas',
+  montanas: 'Montañas',
+  arrecife_disperso: 'Arrecife Disperso',
+  sendero_de_caminantes: 'Sendero de Caminantes',
+  aurora: 'Aurora (Zona de Impacto)',
+  zona_de_aterrizaje: 'Zona de Aterrizaje',
 }
 
 const TYPE_LABELS = {
-  fauna:     'Fauna',
-  flora:     'Flora',
-  material:   'Material',
-  poi:       'Punto de interés',
+  fauna: 'Fauna',
+  flora: 'Flora',
+  material: 'Material',
+  poi: 'Punto de interés',
   leviathan: 'Leviatán',
   notas: 'Notas',
 }
 
 const TYPE_COLORS = {
-  fauna:     '#ff6b6b',
-  flora:     '#4ade80',
-  material:   '#fbbf24',
-  poi:       '#a78bfa',
+  fauna: '#ff6b6b',
+  flora: '#4ade80',
+  material: '#fbbf24',
+  poi: '#a78bfa',
   leviathan: '#fb7185',
   notas: 'Notas',
 }
@@ -79,35 +79,36 @@ function ResourcePanel({ marker, onClose }) {
   const typeColor = TYPE_COLORS[resource?.type] || '#60a5fa'
   const user = JSON.parse(localStorage.getItem('user'))
   const isAdmin = user?.role === 'admin'
+  const isLogged = user?.role === 'user' || user?.role === 'premium' || user?.role === 'admin'
 
   const stats = resource?.stats
     ? (resource.stats instanceof Map
-        ? Object.fromEntries(resource.stats)
-        : typeof resource.stats === 'object' ? resource.stats : {})
+      ? Object.fromEntries(resource.stats)
+      : typeof resource.stats === 'object' ? resource.stats : {})
     : {}
   const statsEntries = Object.entries(stats)
 
   return (
     <div style={{
-      position:      'absolute',
-      bottom:        '27px',
-      left:          '30px',
-      right:         '28px',
-      zIndex:        500,
-      opacity:       visible ? 1 : 0,
-      transform:     visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.98)',
-      transition:    'opacity 0.25s ease, transform 0.25s ease',
+      position: 'absolute',
+      bottom: '27px',
+      left: '30px',
+      right: '28px',
+      zIndex: 500,
+      opacity: visible ? 1 : 0,
+      transform: visible ? 'translateY(0) scale(1)' : 'translateY(8px) scale(0.98)',
+      transition: 'opacity 0.25s ease, transform 0.25s ease',
       pointerEvents: visible ? 'auto' : 'none',
     }}>
       <div style={{
-        background:     'rgba(8, 16, 36, 0.96)',
-        border:         `1px solid ${typeColor}44`,
-        borderRadius:   '12px',
+        background: 'rgba(8, 16, 36, 0.96)',
+        border: `1px solid ${typeColor}44`,
+        borderRadius: '12px',
         backdropFilter: 'blur(16px)',
-        boxShadow:      `0 -4px 32px rgba(0,0,0,0.5), 0 0 0 1px ${typeColor}22`,
-        overflow:       'hidden',
-        display:        'flex',
-        height:         '160px',
+        boxShadow: `0 -4px 32px rgba(0,0,0,0.5), 0 0 0 1px ${typeColor}22`,
+        overflow: 'hidden',
+        display: 'flex',
+        height: '160px',
       }}>
 
         {/* Banda de color tipo */}
@@ -115,13 +116,13 @@ function ResourcePanel({ marker, onClose }) {
 
         {/* Imagen */}
         <div style={{
-          width:          '140px',
-          flexShrink:     0,
-          background:     'rgba(0,0,0,0.3)',
-          display:        'flex',
-          alignItems:     'center',
+          width: '140px',
+          flexShrink: 0,
+          background: 'rgba(0,0,0,0.3)',
+          display: 'flex',
+          alignItems: 'center',
           justifyContent: 'center',
-          overflow:       'hidden',
+          overflow: 'hidden',
         }}>
           {resource?.image_url ? (
             <img
@@ -135,10 +136,10 @@ function ResourcePanel({ marker, onClose }) {
               background: `${typeColor}22`, border: `2px solid ${typeColor}55`,
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem',
             }}>
-              {resource?.type === 'fauna'     ? '🐟' :
-               resource?.type === 'flora'     ? '🌿' :
-               resource?.type === 'material'   ? '💎' :
-               resource?.type === 'leviathan' ? '🦑' : '📍'}
+              {resource?.type === 'fauna' ? '🐟' :
+                resource?.type === 'flora' ? '🌿' :
+                  resource?.type === 'material' ? '💎' :
+                    resource?.type === 'leviathan' ? '🦑' : '📍'}
             </div>
           )}
         </div>
@@ -217,8 +218,9 @@ function ResourcePanel({ marker, onClose }) {
                 <span style={{ color: '#e2e8f0', fontSize: '0.8rem', fontWeight: '600' }}>{val}</span>
               </div>
             ))}
-            {/* Link a la wiki */}
-          <a
+
+            {isLogged && (
+              < a
             href={`/wiki/${resource?.type}`}
             style={{
               marginTop: 'auto', display: 'inline-flex', alignItems: 'center',
@@ -230,82 +232,84 @@ function ResourcePanel({ marker, onClose }) {
           >
             Ver en la Wiki →
           </a>
-          {isAdmin && (
-            <button
-              onClick={async () => {
-                if (!confirm('¿Seguro que quieres eliminar este POI?')) return
-                await api.delete(`/markers/${marker._id}`)
-                onClose()
-                window.location.reload()
-              }}
-              style={{
-                marginTop: '8px',
-                background: 'rgba(239, 68, 68, 0.12)',
-                border: '1px solid rgba(239, 68, 68, 0.4)',
-                color: '#ef4444',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontSize: '0.7rem',
-                fontWeight: '600',
-                transition: 'all 0.2s',
-                width: 'fit-content',
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'
-              }}
-            >
-              🗑 Eliminar
-            </button>
-          )}
-          </div>
-        )}
+      )}
 
-        {/* Notas del marcador */}
-        {marker?.notes && (
-          <div style={{
-            width: '180px', flexShrink: 0,
-            borderLeft: '1px solid rgba(255,255,255,0.06)',
-            padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '6px',
-          }}>
-            <span style={{
-              color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
-              letterSpacing: '0.1em', fontWeight: '700',
-            }}>Notas</span>
-            <p style={{
-              margin: 0, color: '#94a3b8', fontSize: '0.78rem', lineHeight: '1.5',
-              overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: 6, WebkitBoxOrient: 'vertical',
-            }}>
-              {marker.notes}
-            </p>
-          </div>
+        {isAdmin && (
+          <button
+            onClick={async () => {
+              if (!confirm('¿Seguro que quieres eliminar este POI?')) return
+              await api.delete(`/markers/${marker._id}`)
+              onClose()
+              window.location.reload()
+            }}
+            style={{
+              marginTop: '8px',
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.4)',
+              color: '#ef4444',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.7rem',
+              fontWeight: '600',
+              transition: 'all 0.2s',
+              width: 'fit-content',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'
+            }}
+          >
+            🗑 Eliminar
+          </button>
         )}
-
-        {/* Botón cerrar */}
-        <button
-          onClick={onClose}
-          style={{
-            position: 'absolute', top: '10px', right: '12px',
-            background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
-            color: '#64748b', width: '28px', height: '28px', borderRadius: '50%',
-            cursor: 'pointer', display: 'flex', alignItems: 'center',
-            justifyContent: 'center', fontSize: '0.8rem', transition: 'all 0.2s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
-            e.currentTarget.style.color = '#e2e8f0'
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
-            e.currentTarget.style.color = '#64748b'
-          }}
-        >✕</button>
       </div>
+        )}
+
+      {/* Notas del marcador */}
+      {marker?.notes && (
+        <div style={{
+          width: '180px', flexShrink: 0,
+          borderLeft: '1px solid rgba(255,255,255,0.06)',
+          padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '6px',
+        }}>
+          <span style={{
+            color: '#475569', fontSize: '0.68rem', textTransform: 'uppercase',
+            letterSpacing: '0.1em', fontWeight: '700',
+          }}>Notas</span>
+          <p style={{
+            margin: 0, color: '#94a3b8', fontSize: '0.78rem', lineHeight: '1.5',
+            overflow: 'hidden', display: '-webkit-box',
+            WebkitLineClamp: 6, WebkitBoxOrient: 'vertical',
+          }}>
+            {marker.notes}
+          </p>
+        </div>
+      )}
+
+      {/* Botón cerrar */}
+      <button
+        onClick={onClose}
+        style={{
+          position: 'absolute', top: '10px', right: '12px',
+          background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)',
+          color: '#64748b', width: '28px', height: '28px', borderRadius: '50%',
+          cursor: 'pointer', display: 'flex', alignItems: 'center',
+          justifyContent: 'center', fontSize: '0.8rem', transition: 'all 0.2s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.1)'
+          e.currentTarget.style.color = '#e2e8f0'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+          e.currentTarget.style.color = '#64748b'
+        }}
+      >✕</button>
     </div>
+    </div >
   )
 }
 
@@ -335,8 +339,8 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
     })
   }
 
-  const allTypesOn   = activeTypes.size === Object.keys(TYPE_LABELS).length
-  const allBiomesOn  = activeBiomes.size === uniqueBiomes.length
+  const allTypesOn = activeTypes.size === Object.keys(TYPE_LABELS).length
+  const allBiomesOn = activeBiomes.size === uniqueBiomes.length
   const anyFilterOff = !allTypesOn || !allBiomesOn
 
   const resetAll = () => {
@@ -350,20 +354,20 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
       <button
         onClick={() => setOpen(o => !o)}
         style={{
-          display:        'flex',
-          alignItems:     'center',
-          gap:            '6px',
-          background:     anyFilterOff ? 'rgba(96,165,250,0.25)' : 'rgba(8,16,36,0.88)',
-          border:         `1px solid ${anyFilterOff ? '#60a5fa' : 'rgba(96,165,250,0.3)'}`,
-          borderRadius:   '8px',
-          color:          anyFilterOff ? '#60a5fa' : '#94a3b8',
-          padding:        '8px 14px',
-          cursor:         'pointer',
-          fontWeight:     '600',
-          fontSize:       '0.82rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+          background: anyFilterOff ? 'rgba(96,165,250,0.25)' : 'rgba(8,16,36,0.88)',
+          border: `1px solid ${anyFilterOff ? '#60a5fa' : 'rgba(96,165,250,0.3)'}`,
+          borderRadius: '8px',
+          color: anyFilterOff ? '#60a5fa' : '#94a3b8',
+          padding: '8px 14px',
+          cursor: 'pointer',
+          fontWeight: '600',
+          fontSize: '0.82rem',
           backdropFilter: 'blur(10px)',
-          transition:     'all 0.2s',
-          letterSpacing:  '0.04em',
+          transition: 'all 0.2s',
+          letterSpacing: '0.04em',
         }}
       >
         <span style={{ fontSize: '1rem' }}>⚙</span>
@@ -381,19 +385,19 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
       {/* Panel desplegable */}
       {open && (
         <div style={{
-          position:       'absolute',
-          top:            '44px',
-          right:          0,
-          width:          '260px',
-          background:     'rgba(8,16,36,0.96)',
-          border:         '1px solid rgba(96,165,250,0.2)',
-          borderRadius:   '12px',
+          position: 'absolute',
+          top: '44px',
+          right: 0,
+          width: '260px',
+          background: 'rgba(8,16,36,0.96)',
+          border: '1px solid rgba(96,165,250,0.2)',
+          borderRadius: '12px',
           backdropFilter: 'blur(16px)',
-          boxShadow:      '0 8px 32px rgba(0,0,0,0.6)',
-          padding:        '16px',
-          display:        'flex',
-          flexDirection:  'column',
-          gap:            '14px',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
         }}>
 
           {/* Header */}
@@ -419,21 +423,21 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               {Object.entries(TYPE_LABELS).map(([type, label]) => {
                 const active = activeTypes.has(type)
-                const color  = TYPE_COLORS[type] || '#60a5fa'
+                const color = TYPE_COLORS[type] || '#60a5fa'
                 return (
                   <button
                     key={type}
                     onClick={() => toggleType(type)}
                     style={{
-                      background:   active ? `${color}22` : 'rgba(255,255,255,0.04)',
-                      border:       `1px solid ${active ? color + '88' : 'rgba(255,255,255,0.1)'}`,
-                      color:        active ? color : '#475569',
+                      background: active ? `${color}22` : 'rgba(255,255,255,0.04)',
+                      border: `1px solid ${active ? color + '88' : 'rgba(255,255,255,0.1)'}`,
+                      color: active ? color : '#475569',
                       borderRadius: '20px',
-                      padding:      '4px 12px',
-                      cursor:       'pointer',
-                      fontSize:     '0.75rem',
-                      fontWeight:   '600',
-                      transition:   'all 0.15s',
+                      padding: '4px 12px',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      transition: 'all 0.15s',
                     }}
                   >
                     {label}
@@ -465,23 +469,23 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', maxHeight: '200px', overflowY: 'auto' }}>
               {uniqueBiomes.map(biome => {
                 const active = activeBiomes.has(biome._id)
-                const color  = biome.color || '#60a5fa'
+                const color = biome.color || '#60a5fa'
                 return (
                   <button
                     key={biome._id}
                     onClick={() => toggleBiome(biome._id)}
                     style={{
-                      display:      'flex',
-                      alignItems:   'center',
-                      gap:          '8px',
-                      background:   active ? `${color}11` : 'transparent',
-                      border:       `1px solid ${active ? color + '44' : 'transparent'}`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: active ? `${color}11` : 'transparent',
+                      border: `1px solid ${active ? color + '44' : 'transparent'}`,
                       borderRadius: '6px',
-                      padding:      '5px 8px',
-                      cursor:       'pointer',
-                      textAlign:    'left',
-                      transition:   'all 0.15s',
-                      width:        '100%',
+                      padding: '5px 8px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s',
+                      width: '100%',
                     }}
                   >
                     <span style={{
@@ -520,9 +524,9 @@ export default function MapPage() {
   const [selectedMarker, setSelectedMarker] = useState(null)
   const [showUploadTool, setShowUploadTool] = useState(false)
   const [showNotesTool, setShowNotesTool] = useState(false)
-  
+
   const mapRef = useRef(null)
-  
+
   const videoRef = useRef(null)
 
   const user = JSON.parse(localStorage.getItem('user'))
@@ -589,16 +593,16 @@ export default function MapPage() {
         ref={videoRef}
         onEnded={handleVideoEnd}
         style={{
-          position:      'fixed',
-          top:           80,
-          left:          0,
-          width:         '100%',
-          height:        'calc(100vh - 80px)',
-          objectFit:     'cover',
-          zIndex:        1,
+          position: 'fixed',
+          top: 80,
+          left: 0,
+          width: '100%',
+          height: 'calc(100vh - 80px)',
+          objectFit: 'cover',
+          zIndex: 1,
           pointerEvents: 'none',
-          opacity:       isTransitioning ? 0 : 1,
-          transition:    'opacity 0.5s ease-in-out',
+          opacity: isTransitioning ? 0 : 1,
+          transition: 'opacity 0.5s ease-in-out',
         }}
         autoPlay
         muted
@@ -617,28 +621,28 @@ export default function MapPage() {
         <button
           onClick={handleVideoChange}
           style={{
-            position:       'fixed',
-            bottom:         '30px',
-            right:          '30px',
-            zIndex:         100,
-            background:     'rgba(96, 165, 250, 0.2)',
-            border:         '2px solid rgba(96, 165, 250, 0.5)',
-            color:          '#60a5fa',
-            padding:        '12px 24px',
-            borderRadius:   '8px',
-            cursor:         'pointer',
-            fontWeight:     '600',
-            fontSize:       '0.95rem',
-            transition:     'all 0.3s ease',
+            position: 'fixed',
+            bottom: '30px',
+            right: '30px',
+            zIndex: 100,
+            background: 'rgba(96, 165, 250, 0.2)',
+            border: '2px solid rgba(96, 165, 250, 0.5)',
+            color: '#60a5fa',
+            padding: '12px 24px',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontWeight: '600',
+            fontSize: '0.95rem',
+            transition: 'all 0.3s ease',
             backdropFilter: 'blur(8px)',
-            animation:      'fadeIn 0.3s ease-in-out',
+            animation: 'fadeIn 0.3s ease-in-out',
           }}
           onMouseEnter={e => {
-            e.target.style.background  = 'rgba(96, 165, 250, 0.3)'
+            e.target.style.background = 'rgba(96, 165, 250, 0.3)'
             e.target.style.borderColor = '#60a5fa'
           }}
           onMouseLeave={e => {
-            e.target.style.background  = 'rgba(96, 165, 250, 0.2)'
+            e.target.style.background = 'rgba(96, 165, 250, 0.2)'
             e.target.style.borderColor = 'rgba(96, 165, 250, 0.5)'
           }}
         >
@@ -648,13 +652,13 @@ export default function MapPage() {
 
       {/* MAPA */}
       <div style={{
-        height:   '90vh',
-        width:    '100%',
-        marginTop:'80px',
-        padding:  '30px',
+        height: '90vh',
+        width: '100%',
+        marginTop: '80px',
+        padding: '30px',
         position: 'relative',
-        zIndex:   10,
-        boxSizing:'border-box',
+        zIndex: 10,
+        boxSizing: 'border-box',
         overflow: 'visible',
       }}>
         <MapContainer
@@ -663,12 +667,12 @@ export default function MapPage() {
           crs={L.CRS.Simple}
           bounds={SVG_BOUNDS}
           style={{
-            height:       '100%',
-            width:        '100%',
-            background:   '#0a1628',
+            height: '100%',
+            width: '100%',
+            background: '#0a1628',
             borderRadius: '12px',
-            boxShadow:    '0 8px 32px rgba(0, 0, 0, 0.6)',
-            border:       '2px solid rgba(96, 165, 250, 0.2)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.6)',
+            border: '2px solid rgba(96, 165, 250, 0.2)',
           }}
           maxZoom={2}
           minZoom={-3}
@@ -702,7 +706,7 @@ export default function MapPage() {
               onClick={() => setShowUploadTool(!showUploadTool)}
               style={{
                 position: 'absolute',
-                top: '46px',       
+                top: '46px',
                 left: '60px',
                 zIndex: 500,
                 background: 'rgba(0, 212, 255, 0.2)',
@@ -767,24 +771,24 @@ export default function MapPage() {
         {/* Tooltip del bioma hovereado */}
         {hoveredBiome && !selectedMarker && (
           <div style={{
-            position:       'absolute',
-            bottom:         '50px',
-            left:           '50%',
-            transform:      'translateX(-50%)',
-            background:     'rgba(10, 22, 40, 0.92)',
-            border:         `2px solid ${BIOME_COLORS[hoveredBiome] || '#60a5fa'}`,
-            borderRadius:   '8px',
-            padding:        '8px 24px',
-            color:          BIOME_COLORS[hoveredBiome] || '#60a5fa',
-            fontWeight:     '700',
-            fontSize:       '1rem',
-            zIndex:         1000,
+            position: 'absolute',
+            bottom: '50px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(10, 22, 40, 0.92)',
+            border: `2px solid ${BIOME_COLORS[hoveredBiome] || '#60a5fa'}`,
+            borderRadius: '8px',
+            padding: '8px 24px',
+            color: BIOME_COLORS[hoveredBiome] || '#60a5fa',
+            fontWeight: '700',
+            fontSize: '1rem',
+            zIndex: 1000,
             backdropFilter: 'blur(8px)',
-            pointerEvents:  'none',
-            whiteSpace:     'nowrap',
-            boxShadow:      `0 0 24px ${BIOME_COLORS[hoveredBiome]}55`,
-            letterSpacing:  '0.06em',
-            textTransform:  'uppercase',
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            boxShadow: `0 0 24px ${BIOME_COLORS[hoveredBiome]}55`,
+            letterSpacing: '0.06em',
+            textTransform: 'uppercase',
           }}>
             {BIOME_NAMES[hoveredBiome] || hoveredBiome}
           </div>
@@ -794,13 +798,13 @@ export default function MapPage() {
 
       {/* SECCIÓN SCROLL */}
       <div style={{
-        minHeight:  '100vh',
+        minHeight: '100vh',
         background: 'rgba(10, 22, 40, 0.8)',
-        padding:    '4rem 2rem',
-        color:      '#fff',
-        position:   'relative',
-        zIndex:     5,
-        opacity:    0,
+        padding: '4rem 2rem',
+        color: '#fff',
+        position: 'relative',
+        zIndex: 5,
+        opacity: 0,
       }}>
         <h2>Sección adicional</h2>
         <p>Aquí irá contenido futuro (Wiki, etc...)</p>
