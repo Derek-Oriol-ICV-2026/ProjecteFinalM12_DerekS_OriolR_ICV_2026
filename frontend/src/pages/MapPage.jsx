@@ -247,17 +247,6 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
                 🗑 Eliminar
               </button>
             )}
-            <button
-              onClick={async () => {
-                if (!marker) return
-                setNoteLoading(true)
-                await api.put('/users/progress/note', { markerId: marker._id, personal_note: noteText })
-                setNoteLoading(false)
-              }}
-            >
-              {noteLoading ? 'Guardando...' : 'Guardar'}
-            </button>
-            <textarea value={noteText} onChange={e => setNoteText(e.target.value)} />
           </div>
         )}
 
