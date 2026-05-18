@@ -68,6 +68,14 @@ export default function BiomePage() {
         setEditingBiome(null)
     }
 
+    // Deduplicar biomas por nombre base (sin el número final)
+    const getBaseName = (name) => name.replace(/\s+\d+$/, '').trim()
+
+    const biomasUnicos = biomas.filter((bioma, index, self) => {
+        const baseName = getBaseName(bioma.name)
+        return index === self.findIndex(b => getBaseName(b.name) === baseName)
+    })
+
     return (
         <div className="bioma-page-wrapper">
             <div className="bioma-page-content">
@@ -97,7 +105,7 @@ export default function BiomePage() {
 
                 {!loading && biomas.length > 0 && (
                     <div className="bioma-items-container">
-                        {biomas.map((bioma) => (
+                        {biomasUnicos.map((bioma) => (
                             <div
                                 key={bioma._id}
                                 className="bioma-item"
@@ -105,7 +113,7 @@ export default function BiomePage() {
                                 {/* Left: Image/Color */}
                                 <div className="bioma-item-image">
                                     {bioma.color ? (
-                                        <div 
+                                        <div
                                             className="bioma-color"
                                             style={{ backgroundColor: bioma.color }}
                                             title={`Color: ${bioma.color}`}
@@ -117,7 +125,7 @@ export default function BiomePage() {
 
                                 {/* Center: Info */}
                                 <div className="bioma-item-info">
-                                    <h3 className="bioma-item-name">{bioma.name}</h3>
+                                    <h3 className="bioma-item-name">{getBaseName(bioma.name)}</h3>
                                     <p className="bioma-item-description">{bioma.description}</p>
                                 </div>
 
@@ -133,7 +141,7 @@ export default function BiomePage() {
 
                                     {/* Botón solo para admins */}
                                     {user && user.role === 'admin' && (
-                                        <button 
+                                        <button
                                             className="btn-edit"
                                             onClick={() => handleEditBiome(bioma)}
                                             title="Editar"
@@ -149,7 +157,7 @@ export default function BiomePage() {
 
                 {/* Modal Formulario */}
                 {showForm && (
-                    <BiomeForm 
+                    <BiomeForm
                         biome={editingBiome}
                         onSave={handleSaveBiome}
                         onClose={handleCloseForm}

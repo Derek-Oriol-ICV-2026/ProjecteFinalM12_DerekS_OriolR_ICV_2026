@@ -151,6 +151,15 @@ export const assignRole = async (req, res) => {
   }
 }
 
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find().select('-password_hash')
+    res.json(users)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
 export const updateNote = async (req, res) => {
   try {
     const userId = req.user.id
