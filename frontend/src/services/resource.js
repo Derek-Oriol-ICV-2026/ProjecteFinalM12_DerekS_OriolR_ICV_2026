@@ -4,7 +4,7 @@ let resourcesCache = null
 
 export const resourceService = {
 
-    getAllResources: async () => {
+  getAllResources: async () => {
     try {
       if (resourcesCache) return resourcesCache
 
@@ -71,6 +71,19 @@ export const resourceService = {
     } catch (error) {
       console.error('Error deleting resource:', error)
       return null
+    }
+  },
+  searchByValue: async (query) => {
+    try {
+      const allResources = await resourceService.getAllResources()
+      if (!query || query.trim() === '') return allResources
+      const q = query.toLowerCase().trim()
+      return allResources.filter(resource =>
+        resource.value?.toString().toLowerCase().includes(q)
+      )
+    } catch (error) {
+      console.error('Error searching resources:', error)
+      return []
     }
   }
 }

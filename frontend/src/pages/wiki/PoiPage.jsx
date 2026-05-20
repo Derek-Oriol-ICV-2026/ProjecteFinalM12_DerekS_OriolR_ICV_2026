@@ -1,29 +1,33 @@
 import { useEffect, useState } from 'react'
 import './PoiPage.css'
 import { resourceService } from '../../services/resource.js'
-
 import { useAuth } from '../../context/AuthContext'
 import PoiForm from './Forms/PoiForm'
 
 export default function PoiPage() {
     const { user } = useAuth()
-    const [poi, setPoi] = useState([])
+    const [allPoi, setAllPoi] = useState([])       // lista completa sin filtrar
+    const [poi, setPoi] = useState([])              // lista mostrada (filtrada)
+    const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [showForm, setShowForm] = useState(false)
     const [editingPoi, setEditingPoi] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
+    // Carga inicial
     useEffect(() => {
         const fetchPoi = async () => {
             try {
                 setLoading(true)
                 const data = await resourceService.getResourcesByType('poi')
+                setAllPoi(data)
                 setPoi(data)
                 setError(null)
             } catch (err) {
                 console.error('Error cargando poi:', err)
                 setError('Error al cargar los poi')
+                setAllPoi([])
                 setPoi([])
             } finally {
                 setLoading(false)
@@ -31,6 +35,18 @@ export default function PoiPage() {
         }
         fetchPoi()
     }, [])
+
+    // Filtrar por valor cuando cambia el query
+    useEffect(() => {
+        if (!query.trim()) {
+            setPoi(allPoi)
+        } else {
+            const q = query.toLowerCase().trim()
+            setPoi(allPoi.filter(r =>
+                r.stats?.value?.toString().toLowerCase().includes(q)
+            ))
+        }
+    }, [query, allPoi])
 
     const handleAddPoi = () => {
         setEditingPoi(null)
@@ -48,14 +64,14 @@ export default function PoiPage() {
             if (editingPoi) {
                 const result = await resourceService.updateResource(editingPoi._id, poiData)
                 if (result) {
-                    setPoi(poi.map(m => m._id === editingPoi._id ? result : m))
+                    setAllPoi(prev => prev.map(m => m._id === editingPoi._id ? result : m))
                     setShowForm(false)
                     setEditingPoi(null)
                 }
             } else {
                 const result = await resourceService.createResource(poiData)
                 if (result) {
-                    setPoi([...poi, result])
+                    setAllPoi(prev => [...prev, result])
                     setShowForm(false)
                 }
             }
@@ -71,7 +87,7 @@ export default function PoiPage() {
         if (window.confirm('¿Estás seguro?')) {
             try {
                 await resourceService.deleteResource(id)
-                setPoi(poi.filter(m => m._id !== id))
+                setAllPoi(prev => prev.filter(m => m._id !== id))
             } catch (err) {
                 console.error('Error eliminando poi:', err)
                 alert('Error al eliminar')
@@ -96,6 +112,25 @@ export default function PoiPage() {
                     </div>
                 </div>
 
+                {/* Buscador */}
+                <div className="poi-search-bar">
+                    <input
+                        type="text"
+                        placeholder="Buscar por valor..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="poi-search-input"
+                    />
+                    {query && (
+                        <button className="poi-search-clear" onClick={() => setQuery('')}>✕</button>
+                    )}
+                </div>
+                {query && !loading && (
+                    <p className="poi-search-results-count">
+                        {poi.length} resultado{poi.length !== 1 ? 's' : ''} para "{query}"
+                    </p>
+                )}
+
                 {error && <div className="poi-error"><p>{error}</p></div>}
 
                 {loading && (
@@ -106,7 +141,9 @@ export default function PoiPage() {
                 )}
 
                 {!loading && poi.length === 0 && !error && (
-                    <div className="poi-empty"><p>No se encontraron poi</p></div>
+                    <div className="poi-empty">
+                        <p>{query ? `No se encontraron resultados para "${query}"` : 'No se encontraron poi'}</p>
+                    </div>
                 )}
 
                 {!loading && poi.length > 0 && (
@@ -141,7 +178,7 @@ export default function PoiPage() {
                 )}
 
                 {showForm && (
-                    <PoiForm 
+                    <PoiForm
                         poi={editingPoi}
                         onSave={handleSavePoi}
                         onClose={handleCloseForm}
