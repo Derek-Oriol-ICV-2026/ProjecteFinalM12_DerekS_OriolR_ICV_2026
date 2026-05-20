@@ -1,29 +1,33 @@
 import { useEffect, useState } from 'react'
 import './FaunaPage.css'
 import { resourceService } from '../../services/resource.js'
-
 import { useAuth } from '../../context/AuthContext'
 import FaunaForm from './Forms/FaunaForm'
 
 export default function FaunaPage() {
     const { user } = useAuth()
-    const [fauna, setFauna] = useState([])
+    const [allFauna, setAllFauna] = useState([])       // lista completa sin filtrar
+    const [fauna, setFauna] = useState([])              // lista mostrada (filtrada)
+    const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [showForm, setShowForm] = useState(false)
     const [editingFauna, setEditingFauna] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
+    // Carga inicial
     useEffect(() => {
         const fetchFauna = async () => {
             try {
                 setLoading(true)
                 const data = await resourceService.getResourcesByType('fauna')
+                setAllFauna(data)
                 setFauna(data)
                 setError(null)
             } catch (err) {
                 console.error('Error cargando fauna:', err)
                 setError('Error al cargar los fauna')
+                setAllFauna([])
                 setFauna([])
             } finally {
                 setLoading(false)
@@ -31,6 +35,18 @@ export default function FaunaPage() {
         }
         fetchFauna()
     }, [])
+
+    // Filtrar por valor cuando cambia el query
+    useEffect(() => {
+        if (!query.trim()) {
+            setFauna(allFauna)
+        } else {
+            const q = query.toLowerCase().trim()
+            setFauna(allFauna.filter(r =>
+                r.stats?.value?.toString().toLowerCase().includes(q)
+            ))
+        }
+    }, [query, allFauna])
 
     const handleAddFauna = () => {
         setEditingFauna(null)
@@ -48,14 +64,14 @@ export default function FaunaPage() {
             if (editingFauna) {
                 const result = await resourceService.updateResource(editingFauna._id, faunaData)
                 if (result) {
-                    setFauna(fauna.map(m => m._id === editingFauna._id ? result : m))
+                    setAllFauna(prev => prev.map(m => m._id === editingFauna._id ? result : m))
                     setShowForm(false)
                     setEditingFauna(null)
                 }
             } else {
                 const result = await resourceService.createResource(faunaData)
                 if (result) {
-                    setFauna([...fauna, result])
+                    setAllFauna(prev => [...prev, result])
                     setShowForm(false)
                 }
             }
@@ -71,7 +87,7 @@ export default function FaunaPage() {
         if (window.confirm('¿Estás seguro?')) {
             try {
                 await resourceService.deleteResource(id)
-                setFauna(fauna.filter(m => m._id !== id))
+                setAllFauna(prev => prev.filter(m => m._id !== id))
             } catch (err) {
                 console.error('Error eliminando fauna:', err)
                 alert('Error al eliminar')
@@ -89,12 +105,31 @@ export default function FaunaPage() {
             <div className="fauna-page-content">
                 <div className="fauna-header">
                     <div className="fauna-header-content">
-                        <h1 className="fauna-title">Fauna</h1>
+                        <h1 className="fauna-title">Pdis</h1>
                         {user && user.role === 'admin' && (
                             <button className="btn-add" onClick={handleAddFauna}>+ Añadir</button>
                         )}
                     </div>
                 </div>
+
+                {/* Buscador */}
+                <div className="fauna-search-bar">
+                    <input
+                        type="text"
+                        placeholder="Buscar por valor..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="fauna-search-input"
+                    />
+                    {query && (
+                        <button className="fauna-search-clear" onClick={() => setQuery('')}>✕</button>
+                    )}
+                </div>
+                {query && !loading && (
+                    <p className="fauna-search-results-count">
+                        {fauna.length} resultado{fauna.length !== 1 ? 's' : ''} para "{query}"
+                    </p>
+                )}
 
                 {error && <div className="fauna-error"><p>{error}</p></div>}
 
@@ -106,7 +141,9 @@ export default function FaunaPage() {
                 )}
 
                 {!loading && fauna.length === 0 && !error && (
-                    <div className="fauna-empty"><p>No se encontraron fauna </p></div>
+                    <div className="fauna-empty">
+                        <p>{query ? `No se encontraron resultados para "${query}"` : 'No se encontraron fauna'}</p>
+                    </div>
                 )}
 
                 {!loading && fauna.length > 0 && (
@@ -141,7 +178,7 @@ export default function FaunaPage() {
                 )}
 
                 {showForm && (
-                    <FaunaForm 
+                    <FaunaForm
                         fauna={editingFauna}
                         onSave={handleSaveFauna}
                         onClose={handleCloseForm}
