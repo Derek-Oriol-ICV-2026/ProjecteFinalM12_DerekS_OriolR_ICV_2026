@@ -4,11 +4,28 @@ import User from '../models/User.js'
 
 export const register = async (req, res) => {
   try {
+    console.log("BODY:", req.body)
     const { username, email, password } = req.body
+    
+    if (!username || !email || !password) {
+      return res.status(400).json({
+        error: "Faltan campos obligatorios"
+      })
+    }
+    
     const password_hash = await bcrypt.hash(password, 10)
-    const user = await User.create({ username, email, password_hash })
-    res.status(201).json({ message: 'Usuari creat', user })
+    
+    const user = await User.create({
+      username,
+      email,
+      password_hash
+    })
+
+    const { password_hash: _, ...safeUser } = user.toObject()
+    res.status(201).json({ message: 'Usuari creat', user: safeUser })
+    
   } catch (err) {
+    console.log(err)
     res.status(400).json({ error: err.message })
   }
 }

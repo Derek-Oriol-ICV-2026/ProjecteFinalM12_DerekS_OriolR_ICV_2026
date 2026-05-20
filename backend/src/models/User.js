@@ -14,9 +14,8 @@ const userSchema = new mongoose.Schema({
   updated_at: { type: Date, default: Date.now }
 })
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', async function() {
   this.updated_at = Date.now()
-  next()
 })
 
 export default mongoose.model('User', userSchema)

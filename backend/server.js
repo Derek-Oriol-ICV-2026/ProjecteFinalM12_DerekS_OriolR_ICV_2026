@@ -30,6 +30,11 @@ app.use('/api/biomes', biomeRoutes)
 app.use('/api/markers', markerRoutes)
 app.use('/api/notes', personalNoteRoutes)
 
+app.use((err, req, res, next) => {
+  console.error('GLOBAL ERROR:', err)
+  res.status(500).json({ error: err.message })
+})
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Servidor corriendo en puerto ${PORT}`)
