@@ -1,6 +1,6 @@
 import User from '../models/User.js'
 import UserProgress from '../models/UserProgress.js'
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 export const getProfile = async (req, res) => {
   try {

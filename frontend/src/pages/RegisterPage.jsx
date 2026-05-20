@@ -24,9 +24,13 @@ export default function RegisterPage() {
         email: form.email,
         password: form.password,
       })
+
       navigate('/login')
     } catch (err) {
-      setError('Error al registrar. Prova amb un altre email.')
+      setError(
+        err.response?.data?.error ||
+        'Error al registrar'
+      )
     }
   }
 

@@ -1,21 +1,23 @@
 #!/bin/bash
- 
-# Obtener el directorio del proyecto
+
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
- 
-# Iniciar Backend
+
+echo "🔧 Instalando dependencias..."
+cd "$PROJECT_DIR/backend" && npm install
+cd "$PROJECT_DIR/frontend" && npm install
+
+# Liberar puertos si están ocupados (compatible Linux/Mac)
+fuser -k 5000/tcp 2>/dev/null
+fuser -k 5173/tcp 2>/dev/null
+
+echo "🚀 Iniciando servidores..."
+
 cd "$PROJECT_DIR/backend"
-npm start &
- 
-# Iniciar Frontend
+npm run dev &
+
 cd "$PROJECT_DIR/frontend"
 npm run dev &
- 
-# Esperar a que se inicien los servidores
-sleep 3
- 
+
+sleep 5
 echo "✅ Backend y Frontend iniciados"
- 
-# Abrir navegador
-xdg-open http://localhost:5173/
- 
+xdg-open http://localhost:5173/ 2>/dev/null || open http://localhost:5173/ 2>/dev/null
