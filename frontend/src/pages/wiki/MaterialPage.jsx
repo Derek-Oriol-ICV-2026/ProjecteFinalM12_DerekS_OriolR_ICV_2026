@@ -1,36 +1,52 @@
 import { useEffect, useState } from 'react'
 import './MaterialPage.css'
 import { resourceService } from '../../services/resource.js'
-
 import { useAuth } from '../../context/AuthContext'
 import MaterialForm from './Forms/MaterialForm'
 
 export default function MaterialPage() {
     const { user } = useAuth()
-    const [materiales, setMateriales] = useState([])
+    const [allMaterial, setAllMaterial] = useState([])       // lista completa sin filtrar
+    const [material, setMaterial] = useState([])              // lista mostrada (filtrada)
+    const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [showForm, setShowForm] = useState(false)
     const [editingMaterial, setEditingMaterial] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
+    // Carga inicial
     useEffect(() => {
-        const fetchMateriales = async () => {
+        const fetchMaterial = async () => {
             try {
                 setLoading(true)
                 const data = await resourceService.getResourcesByType('material')
-                setMateriales(data)
+                setAllMaterial(data)
+                setMaterial(data)
                 setError(null)
             } catch (err) {
-                console.error('Error cargando materiales:', err)
-                setError('Error al cargar los materiales')
-                setMateriales([])
+                console.error('Error cargando material:', err)
+                setError('Error al cargar los material')
+                setAllMaterial([])
+                setMaterial([])
             } finally {
                 setLoading(false)
             }
         }
-        fetchMateriales()
+        fetchMaterial()
     }, [])
+
+    // Filtrar por valor cuando cambia el query
+    useEffect(() => {
+        if (!query.trim()) {
+            setMaterial(allMaterial)
+        } else {
+            const q = query.toLowerCase().trim()
+            setMaterial(allMaterial.filter(r =>
+                r.stats?.value?.toString().toLowerCase().includes(q)
+            ))
+        }
+    }, [query, allMaterial])
 
     const handleAddMaterial = () => {
         setEditingMaterial(null)
@@ -48,14 +64,14 @@ export default function MaterialPage() {
             if (editingMaterial) {
                 const result = await resourceService.updateResource(editingMaterial._id, materialData)
                 if (result) {
-                    setMateriales(materiales.map(m => m._id === editingMaterial._id ? result : m))
+                    setAllMaterial(prev => prev.map(m => m._id === editingMaterial._id ? result : m))
                     setShowForm(false)
                     setEditingMaterial(null)
                 }
             } else {
                 const result = await resourceService.createResource(materialData)
                 if (result) {
-                    setMateriales([...materiales, result])
+                    setAllMaterial(prev => [...prev, result])
                     setShowForm(false)
                 }
             }
@@ -71,7 +87,7 @@ export default function MaterialPage() {
         if (window.confirm('¿Estás seguro?')) {
             try {
                 await resourceService.deleteResource(id)
-                setMateriales(materiales.filter(m => m._id !== id))
+                setAllMaterial(prev => prev.filter(m => m._id !== id))
             } catch (err) {
                 console.error('Error eliminando material:', err)
                 alert('Error al eliminar')
@@ -89,29 +105,50 @@ export default function MaterialPage() {
             <div className="material-page-content">
                 <div className="material-header">
                     <div className="material-header-content">
-                        <h1 className="material-title">Materiales</h1>
+                        <h1 className="material-title">Pdis</h1>
                         {user && user.role === 'admin' && (
                             <button className="btn-add" onClick={handleAddMaterial}>+ Añadir</button>
                         )}
                     </div>
                 </div>
 
+                {/* Buscador */}
+                <div className="material-search-bar">
+                    <input
+                        type="text"
+                        placeholder="Buscar por valor..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        className="material-search-input"
+                    />
+                    {query && (
+                        <button className="material-search-clear" onClick={() => setQuery('')}>✕</button>
+                    )}
+                </div>
+                {query && !loading && (
+                    <p className="material-search-results-count">
+                        {material.length} resultado{material.length !== 1 ? 's' : ''} para "{query}"
+                    </p>
+                )}
+
                 {error && <div className="material-error"><p>{error}</p></div>}
 
                 {loading && (
                     <div className="material-loading">
                         <div className="loading-spinner"></div>
-                        <p>Cargando materiales...</p>
+                        <p>Cargando material...</p>
                     </div>
                 )}
 
-                {!loading && materiales.length === 0 && !error && (
-                    <div className="material-empty"><p>No se encontraron materiales</p></div>
+                {!loading && material.length === 0 && !error && (
+                    <div className="material-empty">
+                        <p>{query ? `No se encontraron resultados para "${query}"` : 'No se encontraron material'}</p>
+                    </div>
                 )}
 
-                {!loading && materiales.length > 0 && (
+                {!loading && material.length > 0 && (
                     <div className="material-items-container">
-                        {materiales.map((material) => (
+                        {material.map((material) => (
                             <div key={material._id} className="material-item">
                                 <div className="material-item-image">
                                     {material.image_url ? (
@@ -141,7 +178,7 @@ export default function MaterialPage() {
                 )}
 
                 {showForm && (
-                    <MaterialForm 
+                    <MaterialForm
                         material={editingMaterial}
                         onSave={handleSaveMaterial}
                         onClose={handleCloseForm}
