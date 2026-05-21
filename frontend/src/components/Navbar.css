@@ -153,77 +153,78 @@
   background: rgba(96, 165, 250, 0.2);
   border-color: #60a5fa;
 }
+/* ── Nombre de usuario con ellipsis ── */
+.user-link .username-text {
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
 
+/* ── Tablet ── */
 @media (max-width: 1024px) {
-  .navbar {
-    padding: 0.75rem 1.5rem;
-    height: 70px;
-  }
-
-  .navbar-left {
-    gap: 1.5rem;
-  }
-
-  .brand-text {
-    font-size: 1rem;
-  }
+  .navbar { padding: 0.75rem 1.5rem; height: 70px; }
+  .brand-text { font-size: 1rem; }
 }
 
 @media (max-width: 768px) {
   .navbar {
     padding: 0.5rem 1rem;
-    height: 65px;
+    height: 60px;
   }
-
-  .navbar-left {
-    gap: 1rem;
+  .navbar-center {
+    gap: 2.5rem;
+    font-size: 20px;
   }
-
-  .navbar-right {
-    gap: 0.75rem;
-  }
-
-  .brand-text {
-    display: none;
-  }
-
-  .nav-link {
-    font-size: 0.9rem;
-    padding: 0.35rem 0.5rem;
-  }
-
-  .logout-btn,
-  .register-link {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
-  }
-
-  .user-link {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .role-badge {
-    font-size: 0.65rem;
-    padding: 0.2rem 0.35rem;
-  }
+  .brand-text { font-size: 0.85rem; }
+  .nav-link { font-size: 0.88rem; padding: 0.35rem 0.5rem; }
+  .logout-btn, .register-link { padding: 0.4rem 0.75rem; font-size: 0.82rem; }
+  .role-badge { font-size: 0.62rem; padding: 0.18rem 0.4rem; }
+  .user-link .username-text { max-width: 70px; }
 }
 
+/* ── Mobile ≤ 480px ── */
 @media (max-width: 480px) {
   .navbar {
-    height: 60px;
-    padding: 0.5rem 0.75rem;
+    height: 56px;
+    padding: 0 0.75rem;
+    position: fixed;
   }
 
-  .navbar-left {
-    gap: 0.75rem;
-  }
-
-  .nav-link {
-    display: none;
-  }
-
-  .user-link {
+  /* Logo: pequeño pero visible */
+  .navbar-left { gap: 0.5rem; }
+  .brand-text {
     font-size: 0.8rem;
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Mapa / Wiki centrados */
+  .navbar-center {
+    gap: 1.5rem;
+    font-size: 16px;
+  }
+  .nav-link { font-size: 0.82rem; padding: 0.3rem 0.4rem; }
+  .nav-link.active { padding: 0.3rem 0.5rem; }
+
+  /* Derecha: usuario + salir compactos */
+  .navbar-right { gap: 0.4rem; }
+  .user-link {
+    flex-direction: row;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+  }
+  .user-link .username-text { max-width: 55px; }
+  .role-badge { display: none; } /* en móvil el badge ocupa mucho */
+  .logout-btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
+  }
+  .register-link {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.75rem;
   }
 }

@@ -46,21 +46,21 @@ const BIOME_NAMES = {
 }
 
 const TYPE_LABELS = {
-  fauna:     'Fauna',
-  flora:     'Flora',
-  material:  'Material',
-  poi:       'Punto de interés',
+  fauna: 'Fauna',
+  flora: 'Flora',
+  material: 'Material',
+  poi: 'Punto de interés',
   leviathan: 'Leviatán',
-  notas:     'Notas',
+  notas: 'Notas',
 }
 
 const TYPE_COLORS = {
-  fauna:     '#ff6b6b',
-  flora:     '#4ade80',
-  material:  '#fbbf24',
-  poi:       '#a78bfa',
+  fauna: '#ff6b6b',
+  flora: '#4ade80',
+  material: '#fbbf24',
+  poi: '#a78bfa',
   leviathan: '#fb7185',
-  notas:     '#38bdf8',
+  notas: '#38bdf8',
 }
 
 const SVG_W = 3439
@@ -75,17 +75,17 @@ function MapClickHandler({ onMapClick }) {
   return null
 }
 
-function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, setNoteLoading }) {
+function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, noteLoading, setNoteLoading }) {
   const isPersonalNote = marker?.isPersonalNote
-  const resource       = marker?.resource_id
-  const visible        = !!marker
-  const typeColor      = isPersonalNote ? TYPE_COLORS.notas : (TYPE_COLORS[resource?.type] || '#60a5fa')
+  const resource = marker?.resource_id
+  const visible = !!marker
+  const typeColor = isPersonalNote ? TYPE_COLORS.notas : (TYPE_COLORS[resource?.type] || '#60a5fa')
 
-  const user    = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user'))
   const isAdmin = user?.role === 'admin'
   const isLogged = user?.role === 'user' || user?.role === 'premium' || user?.role === 'admin'
 
-  const stats        = resource?.stats
+  const stats = resource?.stats
     ? (resource.stats instanceof Map ? Object.fromEntries(resource.stats) : typeof resource.stats === 'object' ? resource.stats : {})
     : {}
   const statsEntries = Object.entries(stats)
@@ -115,7 +115,7 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           boxShadow: `0 -4px 32px rgba(0,0,0,0.5), 0 0 0 1px ${typeColor}22`,
           overflow: 'hidden',
           display: 'flex',
-          height: '160px',
+          height: '200px',
         }}
       >
 
@@ -124,7 +124,7 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
         <div
           className="resource-panel-image"
           style={{
-            width: '140px', flexShrink: 0,
+            width: '200px', flexShrink: 0,
             background: 'rgba(0,0,0,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
           }}
@@ -182,14 +182,44 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
             </div>
           )}
 
+          {/* ── BLOQUE NOTA PERSONAL con botón eliminar ── */}
           {isPersonalNote ? (
-            <p style={{
-              margin: 0, color: '#94a3b8', fontSize: '0.82rem', lineHeight: '1.5',
-              overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
-            }}>
-              {marker.note}
-            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <p style={{
+                margin: 0, color: '#94a3b8', fontSize: '0.82rem', lineHeight: '1.5',
+                overflow: 'hidden', display: '-webkit-box',
+                WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+              }}>
+                {marker.note}
+              </p>
+              <button
+                onClick={async () => {
+                  if (!confirm('¿Eliminar esta nota?')) return
+                  try {
+                    await api.delete(`/notes/${marker._id}`)
+                    onNoteDeleted(marker._id)
+                  } catch (err) {
+                    console.error('Error al eliminar nota:', err)
+                  }
+                }}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.12)',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                  color: '#ef4444',
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  cursor: 'pointer',
+                  fontSize: '0.7rem',
+                  fontWeight: '600',
+                  width: 'fit-content',
+                  transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.25)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'}
+              >
+                🗑 Eliminar nota
+              </button>
+            </div>
           ) : (
             <>
               {resource?.description && (
@@ -340,10 +370,10 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
     }, {})
   )
 
-  const toggleType  = (type) => setActiveTypes(prev  => { const n = new Set(prev); n.has(type)  ? n.delete(type)  : n.add(type);  return n })
-  const toggleBiome = (id)   => setActiveBiomes(prev => { const n = new Set(prev); n.has(id)    ? n.delete(id)    : n.add(id);    return n })
+  const toggleType = (type) => setActiveTypes(prev => { const n = new Set(prev); n.has(type) ? n.delete(type) : n.add(type); return n })
+  const toggleBiome = (id) => setActiveBiomes(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n })
 
-  const allTypesOn  = activeTypes.size  === Object.keys(TYPE_LABELS).length
+  const allTypesOn = activeTypes.size === Object.keys(TYPE_LABELS).length
   const allBiomesOn = activeBiomes.size === uniqueBiomes.length
   const anyFilterOff = !allTypesOn || !allBiomesOn
 
@@ -506,25 +536,25 @@ function FilterPanel({ markers, activeTypes, setActiveTypes, activeBiomes, setAc
 }
 
 export default function MapPage() {
-  const [markers, setMarkers]           = useState([])
+  const [markers, setMarkers] = useState([])
   const [personalNotes, setPersonalNotes] = useState([])
-  const [activeTypes, setActiveTypes]   = useState(new Set(Object.keys(TYPE_LABELS)))
+  const [activeTypes, setActiveTypes] = useState(new Set(Object.keys(TYPE_LABELS)))
   const [activeBiomes, setActiveBiomes] = useState(null)
   const [isAlternativeVideo, setIsAlternativeVideo] = useState(false)
-  const [isTransitioning, setIsTransitioning]       = useState(false)
-  const [showButton, setShowButton]     = useState(true)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+  const [showButton, setShowButton] = useState(true)
   const [hoveredBiome, setHoveredBiome] = useState(null)
   const [selectedMarker, setSelectedMarker] = useState(null)
   const [showUploadTool, setShowUploadTool] = useState(false)
-  const [noteText, setNoteText]         = useState('')
-  const [noteLoading, setNoteLoading]   = useState(false)
+  const [noteText, setNoteText] = useState('')
+  const [noteLoading, setNoteLoading] = useState(false)
 
-  const mapRef   = useRef(null)
+  const mapRef = useRef(null)
   const videoRef = useRef(null)
 
-  const user             = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user'))
   const isPremiumOrAbove = user?.role === 'premium' || user?.role === 'admin'
-  const showNotesOnMap   = activeTypes.has('notas')
+  const showNotesOnMap = activeTypes.has('notas')
 
   useEffect(() => {
     api.get('/markers')
@@ -595,6 +625,11 @@ export default function MapPage() {
     }
   }
 
+  const handleNoteDeleted = (id) => {
+    setPersonalNotes(prev => prev.filter(n => n._id !== id))
+    setSelectedMarker(null)
+  }
+
   return (
     <>
       <video
@@ -662,14 +697,14 @@ export default function MapPage() {
       <div
         className='hero-content'
         style={{
-          height:    '95vh',
-          width:     '100%',
+          height: '90vh',
+          width: '100%',
           marginTop: '80px',
-          padding:   '30px',
-          position:  'relative',
-          zIndex:    10,
+          padding: '30px',
+          position: 'relative',
+          zIndex: 10,
           boxSizing: 'border_box',
-          overflow:  'visible',
+          overflow: 'visible',
         }}
       >
         <MapContainer
@@ -727,7 +762,7 @@ export default function MapPage() {
                 cursor: 'pointer',
                 fontWeight: '600',
                 backdropFilter: 'blur(8px)',
-                transition:     'all 0.3s ease',
+                transition: 'all 0.3s ease',
               }}
               onMouseEnter={e => e.target.style.background = 'rgba(0,212,255,0.3)'}
               onMouseLeave={e => e.target.style.background = 'rgba(0,212,255,0.2)'}
@@ -786,6 +821,7 @@ export default function MapPage() {
         <ResourcePanel
           marker={selectedMarker}
           onClose={handleClosePanel}
+          onNoteDeleted={handleNoteDeleted}
           noteText={noteText}
           setNoteText={setNoteText}
           noteLoading={noteLoading}

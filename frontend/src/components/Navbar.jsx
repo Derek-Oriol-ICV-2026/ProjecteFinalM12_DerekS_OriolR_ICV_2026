@@ -26,27 +26,28 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="navbar-center">
-        <Link 
-          to="/" 
+        <Link
+          to="/"
           className={`nav-link ${isActive('/') && !isActive('/wiki') ? 'active' : ''}`}
         >
           Mapa
         </Link>
         {user && (
-          <Link 
-            to="/wiki" 
+          <Link
+            to="/wiki"
             className={`nav-link ${isActive('/wiki') ? 'active' : ''}`}
           >
             Wiki
           </Link>
         )}
       </div>
-        
+
       <div className="navbar-right">
         {user ? (
           <>
             <Link to="/profile" className="nav-link user-link">
-              {user.username} <span className="role-badge">{user.role}</span>
+              <span className="username-text">{user.username}</span>
+              <span className="role-badge">{user.role}</span>
             </Link>
             <button onClick={handleLogout} className="logout-btn">
               Sortir
