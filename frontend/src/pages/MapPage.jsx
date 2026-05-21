@@ -721,7 +721,7 @@ export default function MapPage() {
             border: '2px solid rgba(96, 165, 250, 0.2)',
           }}
           maxZoom={2}
-          minZoom={-3}
+          minZoom={-7}
           zoomSnap={0.2}
           attributionControl={false}
         >

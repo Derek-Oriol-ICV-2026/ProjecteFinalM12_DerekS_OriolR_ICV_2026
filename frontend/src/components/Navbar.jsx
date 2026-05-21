@@ -18,12 +18,10 @@ export default function Navbar() {
 
   const isActive = (path) => location.pathname.startsWith(path)
 
-  // Cierra el menú al cambiar de ruta
   useEffect(() => {
     setMenuOpen(false)
   }, [location.pathname])
 
-  // Bloquea el scroll del body cuando el drawer está abierto
   useEffect(() => {
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -35,7 +33,7 @@ export default function Navbar() {
         {/* LEFT */}
         <div className="navbar-left">
           <Link to="/" className="navbar-brand">
-            <SonarLogo size="sm" showText={false} animated={true} />
+            <SonarLogo size='sm' showText={false} animated={true} />
             <span className="brand-text">Abyss Interactive</span>
           </Link>
         </div>
@@ -100,7 +98,6 @@ export default function Navbar() {
       <div className={`drawer ${menuOpen ? 'open' : ''}`} role="dialog" aria-modal="true">
         <div className="drawer-header">
           <Link to="/" className="navbar-brand" onClick={() => setMenuOpen(false)}>
-            <SonarLogo size="sm" showText={false} animated={false} />
             <span className="brand-text">Abyss Interactive</span>
           </Link>
         </div>

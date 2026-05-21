@@ -1,9 +1,5 @@
 @media (max-width: 480px) {
 
-  .video,
-  .button-atac {
-    display: none;
-  }
 
   .hero-content {
     display: block !important;
@@ -53,10 +49,7 @@
   }
 
   .upload-tool-btn {
-    top: 10px !important;
-    left: 52px !important;
-    padding: 6px 12px !important;
-    font-size: 0.78rem !important;
+    display: none;
   }
 
   .filter-panel-dropdown {

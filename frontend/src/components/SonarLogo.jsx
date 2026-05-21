@@ -4,7 +4,7 @@ import './SonarLogo.css';
 export default function SonarLogo({ size = 'sm', showText = false, animated = true }) {
   const sizeMap = {
     sm: 170,
-    md: 80,
+    md: 100,
     lg: 120
   };
 
