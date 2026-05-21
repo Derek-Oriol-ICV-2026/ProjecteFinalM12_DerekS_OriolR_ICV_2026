@@ -150,6 +150,14 @@
   background: rgba(96, 165, 250, 0.2);
   border-color: #60a5fa;
 }
+/* ── Nombre de usuario con ellipsis ── */
+.user-link .username-text {
+  max-width: 90px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
 
 /* ─── HAMBURGER ───────────────────────────────────────────── */
 .hamburger {
@@ -346,8 +354,14 @@
   .hamburger {
     display: flex;
   }
+  .brand-text { font-size: 0.85rem; }
+  .nav-link { font-size: 0.88rem; padding: 0.35rem 0.5rem; }
+  .logout-btn, .register-link { padding: 0.4rem 0.75rem; font-size: 0.82rem; }
+  .role-badge { font-size: 0.62rem; padding: 0.18rem 0.4rem; }
+  .user-link .username-text { max-width: 70px; }
 }
 
+/* ── Mobile ≤ 480px ── */
 @media (max-width: 480px) {
   .navbar {
     padding: 0 1rem;
