@@ -1,4 +1,3 @@
-/* Wrapper principal */
 .wrapper {
   position: relative;
   width: 100%;
@@ -11,7 +10,6 @@
   z-index: 10;
 }
 
-/* Fondo */
 .bg {
   position: fixed;
   top: 80px;
@@ -27,7 +25,6 @@
   pointer-events: none;
 }
 
-/* Card */
 .card {
   position: relative;
   z-index: 2;
@@ -41,7 +38,6 @@
   align-items: center;
 }
 
-/* Avatar */
 .avatarWrap {
   width: 64px;
   height: 64px;
@@ -53,7 +49,6 @@
   margin-bottom: 16px;
 }
 
-/* Título */
 .title {
   color: #0d1b2a;
   font-size: 20px;
@@ -63,7 +58,6 @@
   margin-bottom: 28px;
 }
 
-/* Formulario */
 .form {
   width: 100%;
 }

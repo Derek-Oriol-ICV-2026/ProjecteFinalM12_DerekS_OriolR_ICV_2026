@@ -2,13 +2,14 @@
 
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+echo "🛑 Liberando puertos..."
+pkill -f nodemon 2>/dev/null
+pkill -f "vite" 2>/dev/null
+sleep 2
+
 echo "🔧 Instalando dependencias..."
 cd "$PROJECT_DIR/backend" && npm install
 cd "$PROJECT_DIR/frontend" && npm install
-
-# Liberar puertos si están ocupados (compatible Linux/Mac)
-fuser -k 5000/tcp 2>/dev/null
-fuser -k 5173/tcp 2>/dev/null
 
 echo "🚀 Iniciando servidores..."
 

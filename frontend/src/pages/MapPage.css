@@ -1,0 +1,71 @@
+@media (max-width: 480px) {
+
+  .video,
+  .button-atac {
+    display: none;
+  }
+
+  .hero-content {
+    display: block !important;
+    margin-top: 60px !important;   
+    padding: 0 !important;
+    height: calc(100dvh - 60px) !important;
+  }
+
+  
+  .hero-content .leaflet-container {
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .resource-panel-outer {
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+
+  .resource-panel-inner {
+    border-radius: 12px 12px 0 0 !important;
+    height: auto !important;
+    min-height: 110px;
+    flex-direction: column !important;
+  }
+
+  .resource-panel-image {
+    display: none !important;
+  }
+
+  .resource-panel-stats,
+  .resource-panel-notes {
+    width: 100% !important;
+    border-left: none !important;
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    padding: 10px 16px !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .resource-panel-stats span:first-child,
+  .resource-panel-notes span:first-child {
+    width: 100%;
+  }
+
+  .upload-tool-btn {
+    top: 10px !important;
+    left: 52px !important;
+    padding: 6px 12px !important;
+    font-size: 0.78rem !important;
+  }
+
+  .filter-panel-dropdown {
+    width: 220px !important;
+  }
+
+  .biome-tooltip {
+    bottom: 130px !important;
+    font-size: 0.8rem !important;
+    padding: 6px 14px !important;
+  }
+}
