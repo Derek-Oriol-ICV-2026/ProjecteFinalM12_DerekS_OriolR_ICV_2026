@@ -115,7 +115,7 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
           boxShadow: `0 -4px 32px rgba(0,0,0,0.5), 0 0 0 1px ${typeColor}22`,
           overflow: 'hidden',
           display: 'flex',
-          height: '160px',
+          height: '200px',
         }}
       >
 
@@ -124,7 +124,7 @@ function ResourcePanel({ marker, onClose, noteText, setNoteText, noteLoading, se
         <div
           className="resource-panel-image"
           style={{
-            width: '140px', flexShrink: 0,
+            width: '200px', flexShrink: 0,
             background: 'rgba(0,0,0,0.3)',
             display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
           }}
@@ -662,7 +662,7 @@ export default function MapPage() {
       <div
         className='hero-content'
         style={{
-          height:    '95vh',
+          height:    '90vh',
           width:     '100%',
           marginTop: '80px',
           padding:   '30px',
