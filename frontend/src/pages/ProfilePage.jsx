@@ -165,7 +165,7 @@ export default function ProfilePage() {
 
       if (form.password && form.password.trim()) {
         if (form.password.length < 6) {
-          setError('La contrasenya debe tenir al menys 6 caràcters')
+          setError('La contraseña debe tener al menos 6 caracteres')
           setLoading(false)
           return
         }
@@ -177,14 +177,14 @@ export default function ProfilePage() {
         setUser({ ...user, ...response.data.user })
       }
 
-      setSuccess('Perfil actualitzat correctament')
+      setSuccess('Perfil actualizado correctamente')
       setIsEditing(false)
       setForm(prev => ({ ...prev, password: '' }))
       setFileName('')
       setTimeout(() => loadProfile(), 2000)
     } catch (err) {
       console.error('Error actualizando perfil:', err)
-      setError(err.response?.data?.error || 'Error en actualitzar el perfil')
+      setError(err.response?.data?.error || 'Error al actualizar el perfil')
       setSuccess('')
     } finally {
       setLoading(false)
@@ -210,7 +210,7 @@ export default function ProfilePage() {
     return (
       <div className="profile-wrapper">
         <div className="profile-body">
-          <div className="loading">Cargant perfil...</div>
+          <div className="loading">Cargando perfil...</div>
         </div>
       </div>
     )
@@ -237,9 +237,9 @@ export default function ProfilePage() {
             </div>
             <ul className="profile-info-list">
               <li>Rol: <span>{user?.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : '—'}</span></li>
-              <li>Membre des de: <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString('ca-ES') : '—'}</span></li>
+              <li>Miembro desde: <span>{user?.created_at ? new Date(user.created_at).toLocaleDateString('ca-ES') : '—'}</span></li>
               <li>Logros: <span>{form.gamesPlayed ?? '—'}</span></li>
-              <li>Temps de joc: <span>{form.score ?? '—'} h</span></li>
+              <li>Tiempo de juego: <span>{form.score ?? '—'} h</span></li>
             </ul>
           </div>
 
@@ -267,7 +267,7 @@ export default function ProfilePage() {
               )}
 
               <div className="row">
-                <label className="label">Nom:</label>
+                <label className="label">Nombre:</label>
                 <input className="input" name="username" value={form.username} onChange={handleChange} disabled={!isEditing} required />
               </div>
 
@@ -278,7 +278,7 @@ export default function ProfilePage() {
 
               {isEditing && (
                 <div className="row">
-                  <label className="label">Contrasenya:</label>
+                  <label className="label">Contraseña:</label>
                   <div className="input-password-wrap">
                     <input className="input" name="password" type={showPassword ? 'text' : 'password'} placeholder="••••••••" value={form.password} onChange={handleChange} />
                     <button type="button" className="toggle-password" onClick={() => setShowPassword(!showPassword)}>
@@ -289,7 +289,7 @@ export default function ProfilePage() {
               )}
 
               <div className="row">
-                <label className="label">Data de naixement:</label>
+                <label className="label">Fecha de nacimiento:</label>
                 <input className="input" name="birthDate" type="date" value={form.birthDate} onChange={handleChange} disabled={!isEditing} />
               </div>
 
@@ -297,19 +297,19 @@ export default function ProfilePage() {
                 <div className="row">
                   <label className="label">Logros:</label>
                   <input className="input" name="gamesPlayed" type="number" min="0" max="17" value={form.gamesPlayed} onChange={handleChange} />
-                  <span className="input-hint-small">(Màx 17)</span>
+                  <span className="input-hint-small">(Máx. 17)</span>
                 </div>
               )}
 
               {isEditing && (
                 <div className="row">
-                  <label className="label">Temps de joc:</label>
+                  <label className="label">Tiempo de juego:</label>
                   <input className="input" name="score" type="number" min="0" value={form.score} onChange={handleChange} />
                 </div>
               )}
 
               <div className="row row-textarea">
-                <label className="label label-top">Missatge:</label>
+                <label className="label label-top">Mensaje:</label>
                 <textarea className="input textarea" name="message" value={form.message} onChange={handleChange} disabled={!isEditing} rows={4} placeholder="Cuéntanos sobre ti..." />
               </div>
 
@@ -320,7 +320,7 @@ export default function ProfilePage() {
               {isEditing && (
                 <div className="button-group">
                   <button type="submit" className="button" disabled={loading}>
-                    {loading ? 'Guardant...' : 'Guardar canvis'}
+                    {loading ? 'Guardando...' : 'Guardar cambios'}
                   </button>
                   <button type="button" className="button" onClick={handleCancel} disabled={loading}>Cancelar</button>
                 </div>
@@ -332,14 +332,14 @@ export default function ProfilePage() {
           {user?.role === 'admin' && (
             <div className="admin-panel">
               <div className="admin-panel__header">
-                <h2 className="admin-panel__title">Gestió d'usuaris</h2>
+                <h2 className="admin-panel__title">Gestión de usuarios</h2>
                 <span className="admin-badge">Admin</span>
               </div>
 
               <input
                 className="admin-search"
                 type="text"
-                placeholder="Buscar per nom..."
+                placeholder="Buscar por nombre..."
                 value={userSearch}
                 onChange={e => setUserSearch(e.target.value)}
               />
@@ -349,9 +349,9 @@ export default function ProfilePage() {
 
               <div className="admin-user-list">
                 {adminLoading ? (
-                  <div className="loading" style={{ padding: '1rem', fontSize: '13px' }}>Carregant usuaris...</div>
+                  <div className="loading" style={{ padding: '1rem', fontSize: '13px' }}>Cargando usuarios...</div>
                 ) : filteredUsers.length === 0 ? (
-                  <div className="admin-empty">Cap usuari trobat</div>
+                  <div className="admin-empty">Ningún usuario encontrado</div>
                 ) : (
                   filteredUsers.map(u => (
                     <div key={u._id} className="admin-user-item">

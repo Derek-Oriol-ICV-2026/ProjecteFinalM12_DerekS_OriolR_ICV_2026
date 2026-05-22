@@ -7,7 +7,6 @@ pkill -f nodemon 2>/dev/null
 pkill -f "vite" 2>/dev/null
 sleep 2
 
-# Cargar nvm
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
 
