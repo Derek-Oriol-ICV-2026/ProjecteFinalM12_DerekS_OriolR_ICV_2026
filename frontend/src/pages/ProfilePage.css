@@ -156,7 +156,7 @@
 .label {
   color: #1a3a4a;
   font-size: 13px;
-  width: 130px;
+  width: 25%;
   flex-shrink: 0;
   text-align: left;
 }
@@ -611,7 +611,6 @@ input[type="number"] {
   cursor: not-allowed;
 }
 
-/* ── RESPONSIVE ───────────────────────────────────── */
 
 @media (max-width: 1024px) {
   .admin-panel {

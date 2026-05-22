@@ -727,7 +727,7 @@ export default function MapPage() {
             position: 'fixed',
             bottom: '30px',
             right: '30px',
-            zIndex: 100,
+            zIndex: 6,
             background: 'rgba(96, 165, 250, 0.2)',
             border: '2px solid rgba(96, 165, 250, 0.5)',
             color: '#60a5fa',
