@@ -15,7 +15,6 @@ export default function BiomePage() {
     const [editingBiome, setEditingBiome] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
-    // Cargar biomas
     useEffect(() => {
         const fetchBiomas = async () => {
             try {
@@ -35,18 +34,15 @@ export default function BiomePage() {
         fetchBiomas()
     }, [])
 
-    // Manejar editar bioma
     const handleEditBiome = (bioma) => {
         setEditingBiome(bioma)
         setShowForm(true)
     }
 
-    // Manejar guardar (solo editar)
     const handleSaveBiome = async (biomeData) => {
         try {
             setFormLoading(true)
             if (editingBiome) {
-                // Actualizar
                 const result = await biomeService.updateBiome(editingBiome._id, biomeData)
                 if (result) {
                     setBiomas(biomas.map(b => b._id === editingBiome._id ? result : b))
@@ -62,13 +58,11 @@ export default function BiomePage() {
         }
     }
 
-    // Cerrar formulario
     const handleCloseForm = () => {
         setShowForm(false)
         setEditingBiome(null)
     }
 
-    // Deduplicar biomas por nombre base (sin el número final)
     const getBaseName = (name) => name.replace(/\s+\d+$/, '').trim()
 
     const biomasUnicos = biomas.filter((bioma, index, self) => {
@@ -79,7 +73,6 @@ export default function BiomePage() {
     return (
         <div className="bioma-page-wrapper">
             <div className="bioma-page-content">
-                {/* Header */}
                 <div className="bioma-header">
                     <h1 className="bioma-title">Biomas</h1>
                 </div>
@@ -110,7 +103,6 @@ export default function BiomePage() {
                                 key={bioma._id}
                                 className="bioma-item"
                             >
-                                {/* Left: Image/Color */}
                                 <div className="bioma-item-image">
                                     {bioma.color ? (
                                         <div
@@ -123,13 +115,11 @@ export default function BiomePage() {
                                     )}
                                 </div>
 
-                                {/* Center: Info */}
                                 <div className="bioma-item-info">
                                     <h3 className="bioma-item-name">{getBaseName(bioma.name)}</h3>
                                     <p className="bioma-item-description">{bioma.description}</p>
                                 </div>
 
-                                {/* Right: Coordinates + Button */}
                                 <div className="bioma-item-actions">
                                     <div className="bioma-item-coords">
                                         {bioma.polygon_coords && bioma.polygon_coords.length > 0 ? (
@@ -139,7 +129,6 @@ export default function BiomePage() {
                                         )}
                                     </div>
 
-                                    {/* Botón solo para admins */}
                                     {user && user.role === 'admin' && (
                                         <button
                                             className="btn-edit"
@@ -155,7 +144,6 @@ export default function BiomePage() {
                     </div>
                 )}
 
-                {/* Modal Formulario */}
                 {showForm && (
                     <BiomeForm
                         biome={editingBiome}

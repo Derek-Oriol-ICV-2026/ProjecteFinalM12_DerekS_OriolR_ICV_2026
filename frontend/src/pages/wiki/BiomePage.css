@@ -1,6 +1,4 @@
-/* ═════════════════════════════════════════════════════════════
-   BIOMAS PAGE - Full Width Design con EDIT ONLY
-   ═════════════════════════════════════════════════════════════ */
+
 
 @keyframes spin {
   from { transform: rotate(0deg); }
@@ -58,7 +56,6 @@
   background: linear-gradient(135deg, #1a5a7a 0%, #0a3a4a 100%);
 }
 
-/* ── Wrapper Principal ── */
 .bioma-page-wrapper {
   position: relative;
   width: 100vw;
@@ -74,7 +71,6 @@
   overflow-x: hidden;
 }
 
-/* ── Contenedor del Contenido ── */
 .bioma-page-content {
   width: 100%;
   max-width: none;

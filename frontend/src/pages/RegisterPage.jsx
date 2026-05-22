@@ -48,13 +48,13 @@ export default function RegisterPage() {
             </svg>
           </div>
 
-          <h1 className="register-title">Registre</h1>
+          <h1 className="register-title">Registro</h1>
 
           {error && <div className="register-error">{error}</div>}
 
           <form onSubmit={handleSubmit} className="register-form">
             <div className="register-row">
-              <label className="register-label">Nom:</label>
+              <label className="register-label">Nombre:</label>
               <input className="register-input" name="username" onChange={handleChange} required />
             </div>
 
@@ -64,12 +64,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="register-row">
-              <label className="register-label">Contrasenya:</label>
+              <label className="register-label">Contraseña:</label>
               <input className="register-input" name="password" type="password" onChange={handleChange} required />
             </div>
 
             <div className="register-row">
-              <label className="register-label">Repetir Contrasenya:</label>
+              <label className="register-label">Repetir Contraseña:</label>
               <input className="register-input" name="confirmPassword" type="password" onChange={handleChange} required />
             </div>
 
@@ -79,8 +79,8 @@ export default function RegisterPage() {
           <div className="register-divider" />
 
           <p className="register-footer">
-            Ja tens compte?
-            <Link to="/login">Inicia sessió</Link>
+            Ya tiene cuenta?
+            <Link to="/login">Iniciar sessión</Link>
           </p>
 
         </div>

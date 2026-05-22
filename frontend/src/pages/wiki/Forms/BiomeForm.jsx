@@ -78,7 +78,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
                 </div>
 
                 <form onSubmit={handleSubmit} className="biome-form">
-                    {/* Nombre */}
                     <div className="form-group">
                         <label htmlFor="name">Nombre *</label>
                         <input
@@ -93,7 +92,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
                         {errors.name && <span className="error">{errors.name}</span>}
                     </div>
 
-                    {/* Descripción */}
                     <div className="form-group">
                         <label htmlFor="description">Descripción</label>
                         <textarea
@@ -107,7 +105,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
                         />
                     </div>
 
-                    {/* Color */}
                     <div className="form-group">
                         <label htmlFor="color">Color *</label>
                         <div className="color-input-group">
@@ -131,7 +128,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
                         {errors.color && <span className="error">{errors.color}</span>}
                     </div>
 
-                    {/* Info sobre coordenadas */}
                     <div className="form-group info">
                         <p>
                             <strong>Nota:</strong> Las coordenadas poligonales se configuran desde el mapa.
@@ -139,7 +135,6 @@ export default function BiomeForm({ biome, onSave, onClose, loading }) {
                         </p>
                     </div>
 
-                    {/* Botones */}
                     <div className="form-buttons">
                         <button
                             type="button"

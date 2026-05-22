@@ -184,7 +184,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
             </div>
           )}
 
-          {/* ── BLOQUE NOTA PERSONAL con botón eliminar ── */}
           {isPersonalNote ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <p style={{
@@ -353,7 +352,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
           </div>
         )}
 
-        {/* Notas del marcador */}
         {marker?.notes && (
           <div
             className="resource-panel-notes"
@@ -377,7 +375,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
           </div>
         )}
 
-        {/* Botón cerrar */}
         <button
           onClick={onClose}
           style={{

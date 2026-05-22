@@ -44,7 +44,7 @@ export const resourceService = {
   createResource: async (resourceData) => {
     try {
       const response = await api.post('/resources', resourceData)
-      resourcesCache = null // Limpiar cache
+      resourcesCache = null
       return response.data
     } catch (error) {
       console.error('Error creating resource:', error)
@@ -55,7 +55,7 @@ export const resourceService = {
   updateResource: async (id, resourceData) => {
     try {
       const response = await api.put(`/resources/${id}`, resourceData)
-      resourcesCache = null // Limpiar cache
+      resourcesCache = null
       return response.data
     } catch (error) {
       console.error('Error updating resource:', error)
@@ -66,7 +66,7 @@ export const resourceService = {
   deleteResource: async (id) => {
     try {
       const response = await api.delete(`/resources/${id}`)
-      resourcesCache = null // Limpiar cache
+      resourcesCache = null
       return response.data
     } catch (error) {
       console.error('Error deleting resource:', error)

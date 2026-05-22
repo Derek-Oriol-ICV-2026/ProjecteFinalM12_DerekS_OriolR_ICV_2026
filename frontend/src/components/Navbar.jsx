@@ -30,7 +30,6 @@ export default function Navbar() {
   return (
     <>
       <nav className="navbar">
-        {/* LEFT */}
         <div className="navbar-left">
           <Link to="/" className="navbar-brand">
             <SonarLogo size='sm' showText={false} animated={true} />
@@ -38,7 +37,6 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* CENTER — solo desktop */}
         <div className="navbar-center">
           <Link
             to="/"
@@ -56,7 +54,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* RIGHT — solo desktop */}
         <div className="navbar-right">
           {user ? (
             <>
@@ -75,7 +72,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* HAMBURGER — solo mobile */}
         <button
           className={`hamburger ${menuOpen ? 'open' : ''}`}
           onClick={() => setMenuOpen(!menuOpen)}
@@ -88,13 +84,11 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* OVERLAY */}
       <div
         className={`drawer-overlay ${menuOpen ? 'visible' : ''}`}
         onClick={() => setMenuOpen(false)}
       />
 
-      {/* DRAWER */}
       <div className={`drawer ${menuOpen ? 'open' : ''}`} role="dialog" aria-modal="true">
         <div className="drawer-header">
           <Link to="/" className="navbar-brand" onClick={() => setMenuOpen(false)}>

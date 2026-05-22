@@ -120,8 +120,8 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
         setLoading(false)
       }
     } else {
-      if (!selectedResource) return setMessage({ text: '⚠️ Selecciona un recurso', type: 'warn' })
-      if (!selectedBiome)    return setMessage({ text: '⚠️ Selecciona un bioma',   type: 'warn' })
+      if (!selectedResource) return setMessage({ text: ' Selecciona un recurso', type: 'warn' })
+      if (!selectedBiome)    return setMessage({ text: ' Selecciona un bioma',   type: 'warn' })
       setLoading(true)
       try {
         await api.post('/markers', {
@@ -132,11 +132,11 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
           notes,
         })
         if (tempMarkerRef.current) { tempMarkerRef.current.remove(); tempMarkerRef.current = null }
-        setMessage({ text: '✅ Marcador creado correctamente', type: 'ok' })
+        setMessage({ text: ' Marcador creado correctamente', type: 'ok' })
         onMarkerCreated?.()
         setTimeout(() => { setDropState(null); setMessage({ text: '', type: '' }) }, 1500)
       } catch (err) {
-        setMessage({ text: `❌ ${err.response?.data?.error || err.message}`, type: 'err' })
+        setMessage({ text: ` ${err.response?.data?.error || err.message}`, type: 'err' })
       } finally {
         setLoading(false)
       }
@@ -219,7 +219,6 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
               x: {dropState.coords.lng.toFixed(1)} · y: {dropState.coords.lat.toFixed(1)}
             </div>
 
-            {/* Modal simplificado para notas */}
             {isNoteType ? (
               <>
                 <div style={styles.section}>
@@ -247,7 +246,6 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
                 </div>
               </>
             ) : (
-              /* Modal completo para recursos */
               <>
                 <div style={styles.section}>
                   <label style={styles.label}>Recurso *</label>
@@ -349,7 +347,7 @@ export function DragDropResourceTool({ mapRef, onClose, onMarkerCreated }) {
                     ? 'none' : `0 4px 20px ${typeInfo?.color}55`,
                 }}
               >
-                {loading ? '⏳ Guardando…' : isNoteType ? '📝 Guardar nota' : '📍 Colocar marcador'}
+                {loading ? ' Guardando…' : isNoteType ? ' Guardar nota' : ' Colocar marcador'}
               </button>
             </div>
           </div>

@@ -6,8 +6,8 @@ import FaunaForm from './Forms/FaunaForm'
 
 export default function FaunaPage() {
     const { user } = useAuth()
-    const [allFauna, setAllFauna] = useState([])       // lista completa sin filtrar
-    const [fauna, setFauna] = useState([])              // lista mostrada (filtrada)
+    const [allFauna, setAllFauna] = useState([])     
+    const [fauna, setFauna] = useState([])             
     const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -15,7 +15,6 @@ export default function FaunaPage() {
     const [editingFauna, setEditingFauna] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
-    // Carga inicial
     useEffect(() => {
         const fetchFauna = async () => {
             try {
@@ -36,7 +35,6 @@ export default function FaunaPage() {
         fetchFauna()
     }, [])
 
-    // Filtrar por valor cuando cambia el query
     useEffect(() => {
         if (!query.trim()) {
             setFauna(allFauna)
@@ -112,7 +110,6 @@ export default function FaunaPage() {
                     </div>
                 </div>
 
-                {/* Buscador */}
                 <div className="fauna-search-bar">
                     <input
                         type="text"

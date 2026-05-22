@@ -1,4 +1,3 @@
-/* ─── BASE NAVBAR ─────────────────────────────────────────── */
 .navbar {
   position: fixed;
   top: 0;
@@ -16,7 +15,6 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* ─── LEFT ────────────────────────────────────────────────── */
 .navbar-left {
   display: flex;
   align-items: center;
@@ -52,7 +50,6 @@
   letter-spacing: 0.5px;
 }
 
-/* ─── CENTER ──────────────────────────────────────────────── */
 .navbar-center {
   position: absolute;
   left: 50%;
@@ -63,7 +60,6 @@
   align-items: center;
 }
 
-/* ─── RIGHT ───────────────────────────────────────────────── */
 .navbar-right {
   display: flex;
   gap: 1.5rem;
@@ -71,7 +67,6 @@
   flex-shrink: 0;
 }
 
-/* ─── LINKS ───────────────────────────────────────────────── */
 .nav-link {
   color: #ffffff;
   text-decoration: none;
@@ -164,7 +159,6 @@
   display: inline-block;
 }
 
-/* ─── HAMBURGER ───────────────────────────────────────────── */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -206,7 +200,6 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* ─── OVERLAY ─────────────────────────────────────────────── */
 .drawer-overlay {
   display: none;
   position: fixed;
@@ -221,7 +214,6 @@
   display: block;
 }
 
-/* ─── DRAWER ──────────────────────────────────────────────── */
 .drawer {
   display: none;
   position: fixed;
@@ -256,7 +248,6 @@
   margin-bottom: 1rem;
 }
 
-/* ─── DRAWER NAV ──────────────────────────────────────────── */
 .drawer-nav {
   display: flex;
   flex-direction: column;
@@ -296,7 +287,6 @@
   opacity: 0.7;
 }
 
-/* ─── DRAWER FOOTER ───────────────────────────────────────── */
 .drawer-footer {
   padding-top: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -348,7 +338,6 @@
   font-size: 0.95rem;
 }
 
-/* ─── RESPONSIVE ──────────────────────────────────────────── */
 @media (max-width: 900px) {
   .navbar-center,
   .navbar-right {
@@ -365,7 +354,6 @@
   .user-link .username-text { max-width: 70px; }
 }
 
-/* ── Mobile ≤ 480px ── */
 @media (max-width: 480px) {
   .navbar {
     padding: 0 1rem;

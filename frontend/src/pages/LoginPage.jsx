@@ -27,7 +27,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* Fondo full viewport igual que el vídeo del mapa */}
       <div className="bg" />
 
       <div className="wrapper">
@@ -51,7 +50,7 @@ export default function LoginPage() {
             </div>
 
             <div className="row">
-              <label className="label">Contrasenya:</label>
+              <label className="label">Contraseña:</label>
               <input className="input" name="password" type="password" onChange={handleChange} required />
             </div>
 
@@ -61,8 +60,8 @@ export default function LoginPage() {
           <div className="divider" />
 
           <p className="footer">
-            No tens compte?
-            <Link to="/register" className="footerLink">Registra&apos;t</Link>
+            No tienes cuenta?
+            <Link to="/register" className="footerLink">Regístrate</Link>
           </p>
 
         </div>

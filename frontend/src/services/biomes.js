@@ -33,7 +33,7 @@ export const biomeService = {
   createBiome: async (biomeData) => {
     try {
       const response = await api.post('/biomes', biomeData)
-      biomesCache = null // Limpiar cache
+      biomesCache = null 
       return response.data
     } catch (error) {
       console.error('Error creating biome:', error)
@@ -44,7 +44,7 @@ export const biomeService = {
   updateBiome: async (id, biomeData) => {
     try {
       const response = await api.put(`/biomes/${id}`, biomeData)
-      biomesCache = null // Limpiar cache
+      biomesCache = null  
       return response.data
     } catch (error) {
       console.error('Error updating biome:', error)
@@ -55,7 +55,7 @@ export const biomeService = {
   deleteBiome: async (id) => {
     try {
       const response = await api.delete(`/biomes/${id}`)
-      biomesCache = null // Limpiar cache
+      biomesCache = null 
       return response.data
     } catch (error) {
       console.error('Error deleting biome:', error)

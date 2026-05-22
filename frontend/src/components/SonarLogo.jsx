@@ -36,18 +36,15 @@ export default function SonarLogo({ size = 'sm', showText = false, animated = tr
         </defs>
 
         <g transform={`translate(${viewBoxSize / 2}, ${viewBoxSize / 2})`}>
-          {/* Anillos concéntricos */}
           <circle cx="0" cy="0" r="15" fill="none" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.4" />
           <circle cx="0" cy="0" r="30" fill="none" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.3" />
           <circle cx="0" cy="0" r="45" fill="none" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.2" />
 
-          {/* Líneas de referencia */}
           <line x1="0" y1="-50" x2="0" y2="50" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.25" />
           <line x1="-50" y1="0" x2="50" y2="0" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.25" />
           <line x1="-35" y1="-35" x2="35" y2="35" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.15" />
           <line x1="-35" y1="35" x2="35" y2="-35" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.15" />
 
-          {/* Onda pulsante */}
           {animated && (
             <>
               <circle className="pulse-ring" cx="0" cy="0" r="8" fill="none" stroke="url(#sonarGrad)" strokeWidth="2" opacity="0.8" />
@@ -55,12 +52,10 @@ export default function SonarLogo({ size = 'sm', showText = false, animated = tr
             </>
           )}
 
-          {/* Línea de barrido */}
           <g className={animated ? 'sweep-line' : ''}>
             <line x1="0" y1="0" x2="0" y2="-50" stroke="url(#sonarGrad)" strokeWidth="1.5" opacity="0.6" />
           </g>
 
-          {/* Puntos de detección */}
           <g className={animated ? 'blip' : ''}>
             <circle cx="25" cy="-30" r="2.5" fill="url(#sonarGrad)" filter="url(#sonarGlow)" />
             <circle cx="25" cy="-30" r="4" fill="none" stroke="url(#sonarGrad)" strokeWidth="1" opacity="0.5" />
@@ -81,7 +76,6 @@ export default function SonarLogo({ size = 'sm', showText = false, animated = tr
             <circle cx="-35" cy="20" r="3.5" fill="none" stroke="url(#sonarGrad)" strokeWidth="0.8" opacity="0.4" />
           </g>
 
-          {/* Punto central */}
           <circle cx="0" cy="0" r="4" fill="url(#sonarGrad)" filter="url(#sonarGlow)" />
           <circle cx="0" cy="0" r="6" fill="none" stroke="url(#sonarGrad)" strokeWidth="1.5" opacity="0.6" />
         </g>

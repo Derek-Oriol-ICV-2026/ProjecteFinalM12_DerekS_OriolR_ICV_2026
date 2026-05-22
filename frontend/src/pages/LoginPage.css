@@ -89,7 +89,6 @@
   box-sizing: border-box;
 }
 
-/* Error */
 .error {
   width: 100%;
   background-color: rgba(200, 40, 40, 0.08);
@@ -102,7 +101,6 @@
   text-align: center;
 }
 
-/* Botón */
 .button {
   width: 100%;
   margin-top: 20px;
@@ -117,7 +115,6 @@
   letter-spacing: 0.5px;
 }
 
-/* Divider */
 .divider {
   height: 1px;
   width: 100%;
@@ -125,7 +122,6 @@
   margin: 18px 0 14px;
 }
 
-/* Footer */
 .footer {
   font-size: 13px;
   color: #4a6a7a;

@@ -6,8 +6,8 @@ import PoiForm from './Forms/PoiForm'
 
 export default function PoiPage() {
     const { user } = useAuth()
-    const [allPoi, setAllPoi] = useState([])       // lista completa sin filtrar
-    const [poi, setPoi] = useState([])              // lista mostrada (filtrada)
+    const [allPoi, setAllPoi] = useState([])      
+    const [poi, setPoi] = useState([])              
     const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -15,7 +15,6 @@ export default function PoiPage() {
     const [editingPoi, setEditingPoi] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
-    // Carga inicial
     useEffect(() => {
         const fetchPoi = async () => {
             try {
@@ -36,7 +35,6 @@ export default function PoiPage() {
         fetchPoi()
     }, [])
 
-    // Filtrar por valor cuando cambia el query
     useEffect(() => {
         if (!query.trim()) {
             setPoi(allPoi)
@@ -112,7 +110,6 @@ export default function PoiPage() {
                     </div>
                 </div>
 
-                {/* Buscador */}
                 <div className="poi-search-bar">
                     <input
                         type="text"

@@ -6,8 +6,8 @@ import FloraForm from './Forms/FloraForm'
 
 export default function FloraPage() {
     const { user } = useAuth()
-    const [allFlora, setAllFlora] = useState([])       // lista completa sin filtrar
-    const [flora, setFlora] = useState([])              // lista mostrada (filtrada)
+    const [allFlora, setAllFlora] = useState([])     
+    const [flora, setFlora] = useState([])              
     const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -15,7 +15,6 @@ export default function FloraPage() {
     const [editingFlora, setEditingFlora] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
-    // Carga inicial
     useEffect(() => {
         const fetchFlora = async () => {
             try {
@@ -36,7 +35,6 @@ export default function FloraPage() {
         fetchFlora()
     }, [])
 
-    // Filtrar por valor cuando cambia el query
     useEffect(() => {
         if (!query.trim()) {
             setFlora(allFlora)
@@ -112,7 +110,6 @@ export default function FloraPage() {
                     </div>
                 </div>
 
-                {/* Buscador */}
                 <div className="flora-search-bar">
                     <input
                         type="text"

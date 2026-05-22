@@ -6,8 +6,8 @@ import MaterialForm from './Forms/MaterialForm'
 
 export default function MaterialPage() {
     const { user } = useAuth()
-    const [allMaterial, setAllMaterial] = useState([])       // lista completa sin filtrar
-    const [material, setMaterial] = useState([])              // lista mostrada (filtrada)
+    const [allMaterial, setAllMaterial] = useState([])       
+    const [material, setMaterial] = useState([])             
     const [query, setQuery] = useState('')
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -15,7 +15,6 @@ export default function MaterialPage() {
     const [editingMaterial, setEditingMaterial] = useState(null)
     const [formLoading, setFormLoading] = useState(false)
 
-    // Carga inicial
     useEffect(() => {
         const fetchMaterial = async () => {
             try {
@@ -36,7 +35,6 @@ export default function MaterialPage() {
         fetchMaterial()
     }, [])
 
-    // Filtrar por valor cuando cambia el query
     useEffect(() => {
         if (!query.trim()) {
             setMaterial(allMaterial)
@@ -112,7 +110,6 @@ export default function MaterialPage() {
                     </div>
                 </div>
 
-                {/* Buscador */}
                 <div className="material-search-bar">
                     <input
                         type="text"

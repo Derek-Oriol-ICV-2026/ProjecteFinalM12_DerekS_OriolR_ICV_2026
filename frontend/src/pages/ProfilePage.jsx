@@ -223,7 +223,6 @@ export default function ProfilePage() {
         <div className="profile-banner" />
 
         <div className={`profile-body ${user?.role === 'admin' ? 'profile-body--admin' : ''}`}>
-          {/* LEFT COLUMN */}
           <div className="profile-left">
             <div className="profile-avatar-wrap">
               {avatarPreview ? (
@@ -243,7 +242,6 @@ export default function ProfilePage() {
             </ul>
           </div>
 
-          {/* CENTER COLUMN: Profile form */}
           <div className="profile-card">
             <div className="title-row">
               <h1 className="title">Perfil</h1>
@@ -328,7 +326,6 @@ export default function ProfilePage() {
             </form>
           </div>
 
-          {/* RIGHT COLUMN: Admin panel */}
           {user?.role === 'admin' && (
             <div className="admin-panel">
               <div className="admin-panel__header">
