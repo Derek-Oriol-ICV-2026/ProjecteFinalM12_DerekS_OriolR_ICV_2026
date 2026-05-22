@@ -75,7 +75,7 @@ function MapClickHandler({ onMapClick }) {
   return null
 }
 
-function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, noteLoading, setNoteLoading }) {
+function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, noteLoading, setNoteLoading, userProgress, setUserProgress }) {
   const isPersonalNote = marker?.isPersonalNote
   const resource = marker?.resource_id
   const visible = !!marker
@@ -83,6 +83,7 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
 
   const user = JSON.parse(localStorage.getItem('user'))
   const isAdmin = user?.role === 'admin'
+  const isPremium = user?.role === 'premium'
   const isLogged = user?.role === 'user' || user?.role === 'premium' || user?.role === 'admin'
 
   const stats = resource?.stats
@@ -116,6 +117,7 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
           overflow: 'hidden',
           display: 'flex',
           height: '200px',
+          transition: 'opacity 0.3s ease',
         }}
       >
 
@@ -182,7 +184,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
             </div>
           )}
 
-          {/* ── BLOQUE NOTA PERSONAL con botón eliminar ── */}
           {isPersonalNote ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <p style={{
@@ -278,6 +279,44 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
               </a>
             )}
 
+            {(isAdmin || isPremium) && resource?.type === 'poi' && marker && (
+              <label style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                marginTop: '8px', cursor: 'pointer', fontSize: '0.75rem',
+                color: userProgress?.[marker._id]?.discovered ? '#64748b' : '#e2e8f0',
+                fontWeight: '600',
+              }}>
+                <input
+                  type="checkbox"
+                  checked={userProgress?.[marker._id]?.discovered || false}
+                  onChange={async (e) => {
+                    const newVal = e.target.checked
+                    setUserProgress(prev => ({
+                      ...prev,
+                      [marker._id]: {
+                        ...prev[marker._id],
+                        discovered: newVal,
+                      }
+                    }))
+                    try {
+                      await api.put(`/markers/${marker._id}/discovered`, { discovered: newVal })
+                    } catch (err) {
+                      console.error('Error al actualizar descubrimiento:', err)
+                      setUserProgress(prev => ({
+                        ...prev,
+                        [marker._id]: {
+                          ...prev[marker._id],
+                          discovered: !newVal,
+                        }
+                      }))
+                    }
+                  }}
+                  style={{ width: '14px', height: '14px', cursor: 'pointer' }}
+                />
+                Descubierto
+              </label>
+            )}
+
             {isAdmin && (
               <button
                 onClick={async () => {
@@ -299,12 +338,8 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
                   transition: 'all 0.2s',
                   width: 'fit-content',
                 }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)'
-                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)' }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.12)' }}
               >
                 🗑 Eliminar
               </button>
@@ -312,7 +347,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
           </div>
         )}
 
-        {/* Notas del marcador */}
         {marker?.notes && (
           <div
             className="resource-panel-notes"
@@ -336,7 +370,6 @@ function ResourcePanel({ marker, onClose, onNoteDeleted, noteText, setNoteText, 
           </div>
         )}
 
-        {/* Botón cerrar */}
         <button
           onClick={onClose}
           style={{
@@ -548,6 +581,7 @@ export default function MapPage() {
   const [showUploadTool, setShowUploadTool] = useState(false)
   const [noteText, setNoteText] = useState('')
   const [noteLoading, setNoteLoading] = useState(false)
+  const [userProgress, setUserProgress] = useState({})
 
   const mapRef = useRef(null)
   const videoRef = useRef(null)
@@ -575,10 +609,21 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!selectedMarker || selectedMarker.isPersonalNote) return
+
     api.get(`/users/progress/${selectedMarker._id}`)
-      .then(res => setNoteText(res.data?.personal_note || ''))
+      .then(res => {
+        const data = res.data || {}
+        setNoteText(data.personal_note || '')
+        setUserProgress(prev => ({
+          ...prev,
+          [selectedMarker._id]: {
+            discovered: data.discovered || false,
+            personal_note: data.personal_note || '',
+          }
+        }))
+      })
       .catch(console.error)
-  }, [selectedMarker])
+  }, [selectedMarker?._id])
 
   useEffect(() => {
     if (videoRef.current) {
@@ -628,6 +673,11 @@ export default function MapPage() {
   const handleNoteDeleted = (id) => {
     setPersonalNotes(prev => prev.filter(n => n._id !== id))
     setSelectedMarker(null)
+  }
+
+  const handleSelectMarker = (marker) => {
+    setSelectedMarker(null)
+    setTimeout(() => setSelectedMarker(marker), 0)
   }
 
   return (
@@ -779,9 +829,10 @@ export default function MapPage() {
               eventHandlers={{
                 click: (e) => {
                   L.DomEvent.stopPropagation(e)
-                  setSelectedMarker(marker)
+                  handleSelectMarker(marker)
                 },
               }}
+              opacity={userProgress[marker._id]?.discovered ? 0.5 : 1}
             />
           ))}
 
@@ -826,6 +877,8 @@ export default function MapPage() {
           setNoteText={setNoteText}
           noteLoading={noteLoading}
           setNoteLoading={setNoteLoading}
+          userProgress={userProgress}
+          setUserProgress={setUserProgress}
         />
 
         {hoveredBiome && !selectedMarker && (
@@ -865,9 +918,7 @@ export default function MapPage() {
         position: 'relative',
         zIndex: 5,
         opacity: 0,
-      }}>
-        <h2>Sección adicional</h2>
-        <p>Aquí irá contenido futuro (Wiki, etc...)</p>
+      }}>        
       </div>
 
       <style>{`

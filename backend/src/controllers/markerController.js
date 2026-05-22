@@ -1,4 +1,5 @@
 import MapMarker from '../models/MapMarker.js'
+import UserProgress from '../models/UserProgress.js'
 
 export const getAll = async (req, res) => {
   try {
@@ -45,6 +46,23 @@ export const remove = async (req, res) => {
   try {
     await MapMarker.findByIdAndDelete(req.params.id)
     res.json({ message: 'Eliminat correctament' })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
+
+export const updateDiscovered = async (req, res) => {
+  try {
+    const userId = req.user.id
+    const { discovered } = req.body
+
+    const updated = await UserProgress.findOneAndUpdate(
+      { user_id: userId, marker_id: req.params.id },
+      { discovered, updated_at: new Date() },
+      { new: true, upsert: true }
+    )
+
+    res.json(updated)
   } catch (err) {
     res.status(500).json({ error: err.message })
   }
