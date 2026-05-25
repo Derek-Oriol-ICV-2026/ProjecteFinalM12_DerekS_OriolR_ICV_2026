@@ -124,9 +124,9 @@ touch backend/.env
 Edita'l amb el teu editor:
 
 ```env
-MONGO_URI=mongodb://localhost:27017/subnautica
-JWT_SECRET=el_teu_secret_molt_segur
+MONGO_URI=mongodb+srv://derekseguracruz_db_user:Uqq2aOiPP0Bbl5vP@subnauticacluster.r6xjy46.mongodb.net/subnautica?retryWrites=true&w=majority&appName=SubnauticaCluster
 PORT=5000
+JWT_SECRET=subnautica_secret_key
 ```
 
 ### 4.3 Configurar la URL de l'API al frontend
